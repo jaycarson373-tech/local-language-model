@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {collectNetwork,networkPreview} from "../server/network";
+import {collectNetwork,networkPreview,readNetwork} from "../server/network";
 import {database} from "../server/database";
 import {Service} from "../server/service";
 const now=Date.parse("2026-10-01T22:00:00Z"),token="controlled-telemetry-read-token-32-characters";
@@ -22,4 +22,12 @@ test("stale, future, duplicate, oversized or insecure telemetry never becomes fa
 
 test("GPU telemetry works before inference counters are measurable",async()=>{
  const data={...fixture(),requestsServed:null,tokensGenerated:null,modelVersion:null};const result=await collectNetwork({url:"https://metrics.example",token,now,fetcher:async()=>Response.json(data)});assert.equal(result.telemetryStatus,"reporting");assert.equal(result.metrics.gpusOnline,2);assert.equal(result.metrics.requestsServed,null);assert.equal(result.metrics.tokensGenerated,null);assert.equal(result.metrics.modelVersion,null);
+});
+
+test("cached collector readings become unavailable at the disclosed freshness deadline",async()=>{
+ const oldUrl=process.env.LLM_TELEMETRY_URL,oldToken=process.env.LLM_TELEMETRY_TOKEN,oldFetch=globalThis.fetch,oldNow=Date.now;let clock=now,calls=0;
+ process.env.LLM_TELEMETRY_URL="https://cache-fixture.example/metrics";process.env.LLM_TELEMETRY_TOKEN=token;Date.now=()=>clock;
+ globalThis.fetch=async()=>{calls++;return Response.json({...fixture(),observedAt:new Date(now-59000).toISOString()});};
+ try{assert.equal((await readNetwork()).telemetryStatus,"reporting");clock+=2000;const stale=await readNetwork();assert.equal(stale.telemetryStatus,"unavailable");assert.equal(stale.metrics.gpusOnline,null);assert.equal(calls,2);}
+ finally{globalThis.fetch=oldFetch;Date.now=oldNow;if(oldUrl===undefined)delete process.env.LLM_TELEMETRY_URL;else process.env.LLM_TELEMETRY_URL=oldUrl;if(oldToken===undefined)delete process.env.LLM_TELEMETRY_TOKEN;else process.env.LLM_TELEMETRY_TOKEN=oldToken;}
 });

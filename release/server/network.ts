@@ -44,6 +44,6 @@ export async function readNetwork(){
  const key=(process.env.LLM_TELEMETRY_URL??"")+"\n"+(process.env.LLM_TELEMETRY_TOKEN??"");
  if(cache?.key===key&&cache.expires>Date.now())return cache.value;
  if(inflight)return inflight;
- inflight=collectNetwork().then(value=>{cache={key,expires:Date.now()+15000,value};return value;}).finally(()=>{inflight=undefined;});
+ inflight=collectNetwork().then(value=>{cache={key,expires:Math.min(Date.now()+15000,value.observedAt?Date.parse(value.observedAt)+60000:Infinity),value};return value;}).finally(()=>{inflight=undefined;});
  return inflight;
 }
