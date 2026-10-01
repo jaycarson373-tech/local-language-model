@@ -1,0 +1,3 @@
+import {defineConfig} from "vite";
+import react from "@vitejs/plugin-react";
+export default defineConfig({plugins:[react(),{name:"workspace-entry",configureServer(server){server.middlewares.use((req,_res,next)=>{if(req.url&&/^\\/(?:chat|credits|account|developers|pricing|transparency|docs)?(?:\\?.*)?$/.test(req.url))req.url="/workspace.html";next();});},generateBundle(_options,bundle){const html=bundle["workspace.html"];if(html){html.fileName="index.html";delete bundle["workspace.html"];bundle["index.html"]=html;}}}],server:{host:"0.0.0.0",proxy:{"/api":"http://127.0.0.1:3000"}},build:{outDir:"dist",rollupOptions:{input:"workspace.html"}}});
