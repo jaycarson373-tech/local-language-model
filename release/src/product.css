@@ -5,8 +5,7 @@ button,a,input,textarea,summary{outline-color:var(--green)}
 button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--green)}
 .sidebar{background:#111318;border-color:var(--line);padding-top:27px;overflow-y:auto;scrollbar-width:thin}
 .brand{font-size:10px;letter-spacing:1.1px;margin-bottom:28px;gap:12px}
-.brand-mark{position:relative;transform:none;width:35px;height:35px;border:0;border-radius:9px;background:#e7ebdf;color:#15181d;font-size:27px;font-weight:600;font-family:Arial,sans-serif;justify-items:start;padding-left:7px}
-.brand-mark span{position:absolute;right:3px;top:5px;font-size:19px}
+.brand-mark{position:relative;transform:none;width:35px;height:35px;border:0;border-radius:9px;background:#e7ebdf;color:#15181d;font-size:27px;font-weight:600;font-family:Arial,sans-serif;justify-items:center;padding-left:0}
 .brand small{color:#8e959f}
 .new-chat{border-color:#343941;background:#1b1e24;color:#e2e5e8}
 .sidebar nav a{color:#a3a9b2;padding-top:11px;padding-bottom:11px}
