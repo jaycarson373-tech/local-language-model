@@ -1,0 +1,33 @@
+name: Public compute preview
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: release
+    env:
+      OUR_PUBLIC_PREVIEW_URL: https://local-language-model.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install browser test dependencies
+        run: npm install
+      - name: Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Public homepage, account CTA and telemetry API
+        run: npx playwright test --config playwright.public.config.ts
+      - name: Public preview evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-compute-preview-evidence
+          path: release/test-results/
