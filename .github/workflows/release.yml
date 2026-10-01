@@ -1,0 +1,46 @@
+name: Release validation
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install
+        run: npm install
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Controlled acceptance
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+      - name: Browser install
+        run: npx playwright install --with-deps chromium
+      - name: Mobile acceptance
+        run: npx playwright test
+      - name: Record evidence and portable source
+        if: always()
+        run: tar --exclude=node_modules --exclude=data --exclude=dist --exclude=test-results --exclude=playwright-report --exclude=.env -czf ../release-source.tar.gz .
+      - name: Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence
+          path: |
+            release/test-results/
+            release/playwright-report/
+            release/package-lock.json
+            release-source.tar.gz
