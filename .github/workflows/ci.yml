@@ -1,0 +1,40 @@
+name: Local Language Model checks
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install
+        run: npm install
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Controlled acceptance tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Browser install
+        run: npx playwright install --with-deps chromium
+      - name: Mobile workspace
+        run: npx playwright test
+      - name: Record evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-evidence
+          path: |
+            app/test-results/
+            app/playwright-report/
+            app/package-lock.json
