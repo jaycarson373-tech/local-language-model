@@ -1,3 +1,5 @@
+> **Historical scaffold.** Current Vercel builds and this redesign use [../release/](../release/). Do not deploy this directory. The instructions below describe the older standalone variant.
+
 # LOCAL LANGUAGE MODEL — $LLM
 
 This directory contains the standalone application. **Use scripts/run.mjs and vite.standalone.ts.** The corrected browser entry is src/workspace.tsx. Earlier scaffolding entries main.tsx, vite.config.ts, Dockerfile and the original root workflow are superseded; the authoritative workflow is [Standalone validation](../.github/workflows/standalone.yml).
