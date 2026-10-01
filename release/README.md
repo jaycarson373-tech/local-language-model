@@ -21,7 +21,7 @@ npm start
 
 Built local URL: http://localhost:3000; set PUBLIC_URL to that origin for a built local preview. The workspace preview is deployed on Vercel; see VERCEL.md. For production set NODE_ENV=production, PUBLIC_URL to the exact public HTTPS origin and DB_PATH to a persistent disk. Use this folder's Dockerfile and maintain one app instance per ledger.
 
-Routes: /, /chat, /credits, /account, /developers, /pricing, /transparency and /docs. The chat workspace is the primary interface.
+Routes: /, /chat, /context, /credits, /account, /developers, /pricing, /transparency and /docs. The overview retains the daily holder-credit proposition. Context Studio performs local exact-paragraph deduplication; byte reduction is not a token, cost or quality benchmark. Context only reaches a provider when the user sends it in chat. The chat workspace is the primary interface.
 
 The server implements wallet signatures, scoped hashed API keys, persistent conversations, a provider adapter layer, exact credit lots, an immutable ledger, funded holder epochs, canonical USDC payment quotes, actual checked-token burn quotes, finalized receipt verification, anti-replay, atomic reservations and restart reconciliation. The token instruction module encodes only canonical legacy SPL transferChecked/burnChecked instructions and ATA derivation; its exact bytes are tested.
 
