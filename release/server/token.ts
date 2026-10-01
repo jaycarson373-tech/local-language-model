@@ -1,0 +1,8 @@
+import {PublicKey,TransactionInstruction} from "@solana/web3.js";
+import {check} from "./money";
+export const TOKEN_PROGRAM_ID=new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const ASSOCIATED_TOKEN_PROGRAM_ID=new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+function data(instruction:number,amount:bigint,decimals:number){check(amount>=0n&&amount<=18446744073709551615n&&Number.isInteger(decimals)&&decimals>=0&&decimals<=18,"Invalid checked token instruction");const bytes=Buffer.alloc(10);bytes[0]=instruction;bytes.writeBigUInt64LE(amount,1);bytes[9]=decimals;return bytes;}
+export function createBurnCheckedInstruction(source:PublicKey,mint:PublicKey,owner:PublicKey,amount:bigint,decimals:number){return new TransactionInstruction({programId:TOKEN_PROGRAM_ID,keys:[{pubkey:source,isSigner:false,isWritable:true},{pubkey:mint,isSigner:false,isWritable:true},{pubkey:owner,isSigner:true,isWritable:false}],data:data(15,amount,decimals)});}
+export function createTransferCheckedInstruction(source:PublicKey,mint:PublicKey,destination:PublicKey,owner:PublicKey,amount:bigint,decimals:number){return new TransactionInstruction({programId:TOKEN_PROGRAM_ID,keys:[{pubkey:source,isSigner:false,isWritable:true},{pubkey:mint,isSigner:false,isWritable:false},{pubkey:destination,isSigner:false,isWritable:true},{pubkey:owner,isSigner:true,isWritable:false}],data:data(12,amount,decimals)});}
+export function getAssociatedTokenAddressSync(mint:PublicKey,owner:PublicKey){check(PublicKey.isOnCurve(owner.toBytes()),"Payment recipient must be a wallet owner");return PublicKey.findProgramAddressSync([owner.toBuffer(),TOKEN_PROGRAM_ID.toBuffer(),mint.toBuffer()],ASSOCIATED_TOKEN_PROGRAM_ID)[0];}
