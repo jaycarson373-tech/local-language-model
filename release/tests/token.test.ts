@@ -1,0 +1,5 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {Keypair} from "@solana/web3.js";
+import {createBurnCheckedInstruction,createTransferCheckedInstruction,TOKEN_PROGRAM_ID,getAssociatedTokenAddressSync} from "../server/token";
+test("canonical checked instruction encodings match legacy SPL layout",()=>{const source=Keypair.generate().publicKey,mint=Keypair.generate().publicKey,owner=Keypair.generate().publicKey,destination=Keypair.generate().publicKey;const burn=createBurnCheckedInstruction(source,mint,owner,1000000n,6);assert.equal(burn.programId.toBase58(),TOKEN_PROGRAM_ID.toBase58());assert.equal(burn.data.toString("hex"),"0f40420f000000000006");assert.deepEqual(burn.keys.map(k=>[k.isSigner,k.isWritable]),[[false,true],[false,true],[true,false]]);const transfer=createTransferCheckedInstruction(source,mint,destination,owner,1000000n,6);assert.equal(transfer.data.toString("hex"),"0c40420f000000000006");assert.equal(transfer.keys[2].pubkey.toBase58(),destination.toBase58());assert.equal(getAssociatedTokenAddressSync(mint,owner).toBytes().length,32);});
