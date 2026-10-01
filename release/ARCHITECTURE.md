@@ -8,16 +8,26 @@ The custom model endpoint is not connected. The upstream change disabling GPT fa
 
 ## Reference inference paths
 
-These are researched options, not installed hardware or a universally optimal setup.
+The operator confirmed on October 1, 2026 that the following server is assembled and running. This is an operator-supplied inventory; no remote hardware or model performance benchmark has been performed by this task.
+
+- 4× NVIDIA GeForce RTX 5090, 32GB GDDR7 each (128GB aggregate across four devices; no NVLink).
+- AMD Threadripper PRO 7975WX, 32 cores / 64 threads, ASUS Pro WS WRX90E-SAGE SE.
+- 256GB DDR5 ECC RDIMM (8×32GB).
+- 2×4TB PCIe 5.0 NVMe, 8TB raw; usable capacity depends on formatting and redundancy.
+- NVIDIA/Mellanox ConnectX 25GbE adapter; exact model not supplied.
+- 3,000W+ server power, dedicated 200–240V service, 240V online UPS.
+- GPU compute chassis, dedicated high-static-pressure airflow and sTR5-compatible CPU cooling; exact chassis, PSU, cooler and UPS models not supplied.
+
+GPU configuration is the primary serving direction. Model weights and the serving endpoint remain unconfigured in this application. Runtime options below are reference paths, not a claim of installed software or a universally optimal setup.
 
 - Apple Silicon: MLX LM, compatible licensed weights sized for available unified memory, evaluated quantization and prompt cache. LoRA is a possible adaptation path after establishing baseline quality.
 - GPU serving: vLLM, supported weights and precision, admission control and an authenticated endpoint. Prefix caches need tenant isolation appropriate to the deployment. Benchmark under realistic concurrent use rather than single-request demonstrations.
 
-Choose only after confirming actual RAM/VRAM, model, context length, latency goals and concurrent users. Do not download weights, provision paid infrastructure or describe a custom model as trained merely to populate a marketing diagram.
+Choose a serving layout after confirming model, context length, GPU topology, latency goals and concurrent users. Do not download weights, provision paid infrastructure or describe a custom model as trained merely to populate a marketing diagram.
 
 ## Model rollout
 
-1. Inventory real hardware and a permitted dataset.
+1. Validate the supplied hardware inventory and assemble a permitted dataset.
 2. Select licensed weights and record a baseline on held-out tasks.
 3. Adapt if justified; compare quality and cost before/after.
 4. Load-test the serving runtime and meter complete input/output usage.
@@ -43,3 +53,9 @@ Paid usage creates a service obligation. Received creator fees, operator funding
 - [vLLM prefix caching](https://docs.vllm.ai/en/latest/features/automatic_prefix_caching/)
 - [OpenAI API pricing](https://developers.openai.com/api/docs/pricing)
 - [Anthropic API pricing](https://platform.claude.com/docs/en/about-claude/pricing)
+
+## Hardware notes
+
+The RTX 5090 reference specification is 575W per card; four cards total 2,300W graphics power. AMD lists the 7975WX at 350W TDP. Those figures imply 2,650W before other components, losses and transients; they are not measured wall power. A nominal 3,000W rating alone does not establish sufficient operating headroom. The final system power and UPS must be qualified for actual continuous load, connectors, cooling and circuit limits by the operator/integrator. No electrical installation or remote server configuration was performed here.
+
+Sources: [NVIDIA RTX 5090](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/), [AMD 7975WX specifications](https://ir.amd.com/news-events/press-releases/detail/1162/amd-introduces-new-amd-ryzen-threadripper-7000-series-processors-and-ryzen-threadripper-pro-7000-wx-series-processors-for-the-ultimate-workstation), [ASUS WRX90 specifications](https://www.asus.com/us/motherboards-components/motherboards/workstation/pro-ws-wrx90e-sage-se/techspec/).

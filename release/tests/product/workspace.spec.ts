@@ -58,10 +58,11 @@ for(const width of [1440,390])test(`infrastructure, setup and cost scenario at $
  await page.goto('/');
  await page.getByRole('button',{name:'04 Local LLM Our custom inference endpoint'}).click();
  await expect(page.locator('.architecture-detail')).toContainText('IN DEVELOPMENT');
- await page.getByRole('button',{name:'GPU server',exact:true}).click();
- await expect(page.locator('.setup-stack')).toContainText('vLLM');
- await page.getByRole('button',{name:'Apple Silicon',exact:true}).click();
- await expect(page.locator('.setup-stack')).toContainText('MLX LM');
+ await page.getByRole('button',{name:'Power & cooling',exact:true}).click();
+ await expect(page.locator('.hardware-specs')).toContainText('240V online UPS');
+ await page.getByRole('button',{name:'Compute hardware',exact:true}).click();
+ await expect(page.locator('.hardware-specs')).toContainText('4× NVIDIA GeForce RTX 5090');
+ await page.locator('#our-setup').screenshot({path:`test-results/hardware-${width}.png`});
  await expect(page.locator('.comparison-result')).toContainText('95.0%');
  await page.getByLabel('Compare with').selectOption('luna');
  await expect(page.locator('.comparison-result')).toContainText('Same assumed cost.');
