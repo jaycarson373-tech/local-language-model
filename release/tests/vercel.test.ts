@@ -9,6 +9,7 @@ test("Vercel preview reports no model and never simulates account or financial o
  const app=await serve(createGateway({backendUrl:""}));
  try{
   const status=await fetch(app.url+"/api/status").then(r=>r.json());assert.equal(status.mode,"preview");assert.equal(status.model.available,false);assert.equal(status.purchaseConfigured,false);assert.equal(status.burnConfigured,false);assert.equal(status.paused,true);
+  const network=await fetch(app.url+"/api/network").then(r=>r.json());assert.equal(network.telemetryStatus,"not_connected");assert.equal(network.inferenceConnected,false);assert.ok(Object.values(network.metrics).every(x=>x===null));
   for(const path of ["me","transparency","auth/nonce","credits/claim","chat"]){const r=await fetch(app.url+"/api/"+path,{method:path==="me"||path==="transparency"?"GET":"POST",headers:{"Content-Type":"application/json"},body:path==="me"||path==="transparency"?undefined:"{}"});assert.equal(r.status,503);assert.match((await r.json()).error,/persistent backend/);}
  }finally{await close(app.server);}
 });

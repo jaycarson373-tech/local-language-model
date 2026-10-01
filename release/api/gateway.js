@@ -13,6 +13,7 @@ export function createGateway(options={}){
   if(!["GET","POST","HEAD"].includes(method))return json(res,405,{error:"Unsupported method"});
   const configured=options.backendUrl??process.env.LLM_BACKEND_URL;
   if(!configured){
+   if(target==="network"&&method==="GET")return json(res,200,{status:"model_in_development",inferenceConnected:false,telemetryStatus:"not_connected",observedAt:null,source:null,metrics:{gpusOnline:null,aggregateVramBytes:null,requestsServed:null,tokensGenerated:null,utilizationBps:null,modelVersion:null},architecture:[{id:"user",label:"USER",state:"interface_ready",detail:"Workspace + developer API"},{id:"credit_layer",label:"LLM CREDIT LAYER",state:"backend_not_connected",detail:"Persistent account service pending"},{id:"request_router",label:"REQUEST ROUTER",state:"relay_ready",detail:"Same-origin API relay"},{id:"local_model",label:"LOCAL MODEL",state:"in_development",detail:"Custom endpoint not connected"},{id:"gpu_cluster",label:"GPU CLUSTER",state:"telemetry_not_connected",detail:"Awaiting hardware collector"},{id:"response",label:"RESPONSE",state:"awaiting_model",detail:"No serving model connected"}]});
    if(target==="status"&&method==="GET")return json(res,200,{name:"Local Language Model",ticker:"LLM",mode:"preview",backendConfigured:false,model,dailyBudget:0,paused:true,purchaseConfigured:false,burnConfigured:false,customModel:{name:"Local Language Model",available:false,status:"In development"},message:unavailable});
    return json(res,503,{error:unavailable});
   }

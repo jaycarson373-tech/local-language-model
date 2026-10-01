@@ -29,8 +29,8 @@ jobs:
         run: npm audit
       - name: Chromium
         run: npx playwright install --with-deps chromium
-      - name: Mobile 390px and 320px
-        run: npx playwright test --config playwright.mobile.config.ts
+      - name: Compute, workspace and context at 1440px, 390px and 320px
+        run: npx playwright test --config playwright.compute.config.ts
       - name: Portable source
         if: always()
         run: tar --exclude=node_modules --exclude=data --exclude=dist --exclude=test-results --exclude=playwright-report --exclude=.env -czf ../verified-release-source.tar.gz .
