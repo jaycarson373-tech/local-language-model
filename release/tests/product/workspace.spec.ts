@@ -6,7 +6,7 @@ for(const width of [1440,390,320]) {
     const errors:string[]=[];
     page.on("pageerror",e=>errors.push(e.message));
     await page.goto("/");
-    await expect(page.getByRole("heading",{name:"Hold LLM. Think bigger."})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Your AI should be local."})).toBeVisible();
     await expect(page.getByRole("link",{name:"View daily credits"})).toBeVisible();
     await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     await page.screenshot({path:`test-results/overview-${width}.png`,fullPage:true});
@@ -51,4 +51,28 @@ test("large context stays local and cannot bypass the chat input limit",async({p
   await expect(page.getByRole("alert")).toContainText("24 KB");
   await expect(page.getByRole("button",{name:"Use in a new chat"})).toBeDisabled();
   await expect(page.getByRole("button",{name:"Download context pack"})).toBeEnabled();
+});
+
+for(const width of [1440,390])test(`infrastructure, setup and cost scenario at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:960});
+ await page.goto('/');
+ await page.getByRole('button',{name:'04 Local LLM Our custom inference endpoint'}).click();
+ await expect(page.locator('.architecture-detail')).toContainText('IN DEVELOPMENT');
+ await page.getByRole('button',{name:'GPU server',exact:true}).click();
+ await expect(page.locator('.setup-stack')).toContainText('vLLM');
+ await page.getByRole('button',{name:'Apple Silicon',exact:true}).click();
+ await expect(page.locator('.setup-stack')).toContainText('MLX LM');
+ await expect(page.locator('.comparison-result')).toContainText('95.0%');
+ await page.getByLabel('Compare with').selectOption('luna');
+ await expect(page.locator('.comparison-result')).toContainText('Same assumed cost.');
+ await page.getByLabel('Monthly input · million tokens').fill('');
+ await expect(page.getByRole('alert')).toContainText('Enter non-negative');
+ await page.getByLabel('Monthly input · million tokens').fill('1');
+ await page.getByLabel('Compare with').selectOption('sonnet');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.locator('#infrastructure').screenshot({path:`test-results/infrastructure-${width}.png`});
+ await page.locator('#cost-lab').screenshot({path:`test-results/cost-lab-${width}.png`});
+ await page.getByRole('link',{name:'Revenue & reserve accounting'}).click();
+ await expect(page.locator('#revenue')).toBeInViewport();
+ await expect(page.getByRole('heading',{name:'Compute has a real cost.'})).toBeVisible();
 });
