@@ -7,3 +7,7 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .mint-id{font-size:9px;word-break:break-all}
+
+/* Keep the full custom model name readable on narrow screens. */
+.model-picker-wrap{max-width:100%}.model-picker{max-width:100%;text-align:left}
+@media(max-width:640px){.workspace-toolbar{flex-wrap:wrap;gap:6px}.model-menu{max-width:calc(100vw - 40px)}}

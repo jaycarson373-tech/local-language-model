@@ -1,7 +1,7 @@
 // Stateless Vercel relay only. Financial records live in the persistent backend.
 // No provider credentials, balance mutation, or ephemeral SQLite database here.
 const unavailable="Account service is not connected on this preview. Wallet sign-in, chat, credit claims, purchases and burns require the persistent backend.";
-const model={id:"gpt-4.1-mini",name:"GPT-4.1 mini",provider:"OpenAI",inputPerMillion:400000000,outputPerMillion:1600000000,context:128000,maxOutput:4096,capabilities:["text","streaming"],available:false};
+const model={id:"local-language-model",name:"Local Language Model",provider:null,inputPerMillion:null,outputPerMillion:null,context:null,maxOutput:null,capabilities:[],available:false,status:"In development"};
 function json(res,status,value){res.statusCode=status;res.setHeader("Content-Type","application/json; charset=utf-8");res.setHeader("Cache-Control","no-store");res.end(JSON.stringify(value));}
 export function createGateway(options={}){
  return async function gateway(req,res){

@@ -6,7 +6,7 @@ The standalone app is in release/. It uses Node.js 24, React/Vite and a persiste
 
 For local development copy release/.env.example to release/.env, then run npm run dev inside release/. The helper loads .env server-side. For production use your host's secret manager; npm start can load a local .env when present.
 
-- OPENAI_API_KEY: a funded OpenAI project key authorized for gpt-4.1-mini.
+- Custom serving credentials: configure server-side only after the custom ProviderAdapter has been connected and verified. There is currently no active serving endpoint. The archived hosted adapter is not a model option or fallback.
 - ADMIN_KEY: at least 32 cryptographically random characters; generated and stored outside the repository.
 - SOLANA_RPC_URL: HTTPS Solana mainnet archive RPC supporting finalized blocks, token-account enumeration and transaction history. The genesis hash is verified.
 - LLM_MINT: actual canonical legacy SPL-token mint, validated against actual supply.
@@ -26,7 +26,7 @@ Canonical mainnet USDC: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v. The servic
 Every admin operation uses POST, Content-Type: application/json and Authorization: Bearer ADMIN_KEY, to YOUR_ORIGIN/api/admin.
 
 1. /fund: {"amount":"actual cleared USD amount","reference":"unique receipt reference","proof":"public HTTPS receipt URL"}. Only inference funding that has actually cleared counts. This endpoint records an operator attestation, not an independent bank/provider-balance verification. Reconcile the evidence against cleared provider funds. Do not count projected fees, market cap, unsold tokens, unconverted USDC or a token burn.
-2. /provider/verify: {}. This calls the actual OpenAI model and requires at least $0.01 of available cleared capacity. Availability stays off until a complete streamed response with actual token usage succeeds. A failed or uncertain probe retains its overhead reserve. Rotating the provider key requires another verification. Never release uncertain cost without provider evidence; operational probe-overhead reconciliation is not automated in this version.
+2. Custom model availability is currently off. /provider/verify returns 503 without reserving or consuming credit. Connect the custom ProviderAdapter, catalog, exact rates and full usage reconciliation before enabling verification. Existing hosted credentials cannot make the custom model available. Never release prior uncertain cost without provider evidence.
 3. /budget: {"dailyLimit":"funded daily USD budget","buffer":"safety and operating USD buffer","pause":false}. Initial daily limit is zero and new issuance is paused. Outstanding lots, overlapping epochs, quotes and overhead all reduce capacity.
 4. /index/start: {}. Validates canonical mint supply and decimals, initializes finalized balances and starts accumulating eligibility history. It never fabricates prior holding time. Current capacity is at most 1,000 canonical token accounts/eligible wallets; larger holder sets stop rather than truncate. Confirm your mint's actual distribution and RPC throughput before production.
 5. /index/tick: {}. Processes every observed finalized token balance change in up to 64 slots per tick. Incoming token-account increases conservatively restart the receiving wallet's full qualification period; unavailable historical blocks prevent advancement. A full 24 hours must be covered by evidence. An in-process maintenance loop runs every 15 seconds. Stop issuance if your index falls behind.
@@ -52,14 +52,14 @@ POST /recover: {} expires daily lots and closed unclaimed allocations, releases 
 
 SQLite transactions use BEGIN IMMEDIATE. Ledger UPDATE and DELETE are blocked by database triggers. No browser database access is exposed; RLS is not applicable to this private local database. Admin authorization is separate from wallet sessions and user API keys. Wallet nonce expiry/replay, session hashes/expiry, same-origin browser mutations, hashed scoped API keys, request/key caps, quote/receipt uniqueness and request concurrency are enforced server-side.
 
-Published rates: $0.40 per million input tokens; $1.60 per million output tokens. One dollar equals 1,000,000,000 integer units. Retail charges determine user credit consumption. Cleared capacity conservatively covers full retail obligations; actual provider invoice spending is not integrated and remains labeled unavailable.
+Custom model rates are not published. Historical accounting rates and request reconciliation remain intact; removing a model option does not rewrite existing balances or records. One dollar equals 1,000,000,000 integer units. Retail charges determine user credit consumption. Cleared capacity conservatively covers full retail obligations; actual provider invoice spending is not integrated and remains labeled unavailable.
 
-## Future custom model
+## Custom model (only offered model)
 
 Implement ProviderAdapter in server/provider.ts with normalized streaming text and complete input/output usage. Add a verified model catalog entry with its actual identifier, prices, context/output limits and capabilities; connect it in the service after verifying the endpoint. Accounts, ledger, lots and UI do not belong in that adapter. Do not enable a model option until actual execution and accounting are verified.
 
 ## Migration and deployment limits
 
-Schema versions are recorded in schema_migrations; quote-evidence columns are added without replacing existing data. Back up the database and validate migrations on a copy. This standalone repository has not imported any previous hosted ledger. Do not switch existing live accounts until a reviewed migration preserves their lots, ledger, requests, quotes and obligations. No production deployment has been provisioned here.
+Schema versions are recorded in schema_migrations; quote-evidence columns are added without replacing existing data. Back up the database and validate migrations on a copy. This standalone repository has not imported any previous hosted ledger. Do not switch existing live accounts until a reviewed migration preserves their lots, ledger, requests, quotes and obligations. The workspace preview is deployed through Vercel; the durable account service and custom serving endpoint still require production setup.
 
 A cleared provider balance, real-model streaming run, archive-index performance, wallet signing on real mobile devices, restart behavior on the chosen host and finalized real payment/burn transactions all remain production acceptance requirements.
