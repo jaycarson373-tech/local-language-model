@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "server",
+    "src/workspace.tsx",
+    "src/guides.tsx",
+    "tests",
+    "vite.standalone.ts",
+    "playwright.config.ts"
+  ],
+  "exclude": [
+    "src/main.tsx"
+  ]
+}
