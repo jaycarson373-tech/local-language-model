@@ -5,6 +5,8 @@ for(const width of [1440,390])test("public Vercel compute preview at "+width+"px
  await page.goto(site,{waitUntil:"domcontentloaded"});await expect(page.getByRole("heading",{name:"HOLD $LLM. USE AI."})).toBeVisible({timeout:120000});
  const status=await request.get(site+"/api/status");expect(status.status()).toBe(200);const s=await status.json();expect(s.name).toBe("Local Language Model");expect(s.model.id).toBe("local-language-model");expect(JSON.stringify(s)).not.toContain("gpt-4.1");
  const network=await request.get(site+"/api/network");expect(network.status()).toBe(200);const n=await network.json();expect(n.metrics).toBeDefined();expect(n.architecture).toHaveLength(6);
+ await expect(page.locator(".compute-page")).not.toContainText(/the repository|operator.confirmation|operator-confirmed|operator-attested/i);
+ await expect(page.locator(".compute-built")).toContainText("DEDICATED GPU INFRASTRUCTURE");
  await expect(page.locator(".compute-telemetry dd")).toHaveCount(6);if(n.telemetryStatus!=="reporting")await expect(page.locator(".compute-telemetry dd")).toHaveText(["—","—","—","—","—","—"]);
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.locator(".compute-hero").getByRole("button",{name:"CONNECT WALLET",exact:true}).click();await expect(page.getByRole("heading",{name:"Connect your wallet"})).toBeVisible();await page.getByRole("button",{name:"Close",exact:true}).click();

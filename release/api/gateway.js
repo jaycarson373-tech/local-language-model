@@ -1,6 +1,6 @@
 // Stateless Vercel relay only. Financial records live in the persistent backend.
 // No provider credentials, balance mutation, or ephemeral SQLite database here.
-const unavailable="Account service is not connected on this preview. Wallet sign-in, chat, credit claims, purchases and burns require the persistent backend.";
+const unavailable="Account access is not live yet. Wallet sign-in, daily claims and transactions will open with the account service.";
 const model={id:"local-language-model",name:"Local Language Model",provider:null,inputPerMillion:null,outputPerMillion:null,context:null,maxOutput:null,capabilities:[],available:false,status:"In development"};
 function json(res,status,value){res.statusCode=status;res.setHeader("Content-Type","application/json; charset=utf-8");res.setHeader("Cache-Control","no-store");res.end(JSON.stringify(value));}
 export function createGateway(options={}){

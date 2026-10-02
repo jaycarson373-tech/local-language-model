@@ -25,7 +25,7 @@ for(const width of [1440,390,320]) {
     await expect(page.getByRole("textbox",{name:"Message"})).toHaveValue("Keep evidence.\n\nExplain uncertainty.");
     await expect(page.getByRole("button",{name:/LOCAL LLM/})).toBeVisible();
     await page.getByRole("button",{name:/LOCAL LLM/}).click();
-    await expect(page.locator(".model-menu")).toContainText("Custom model · endpoint pending");
+    await expect(page.locator(".model-menu")).toContainText("Custom model · Local Language Model");
     await page.getByRole("button",{name:/LOCAL LLM/}).click();
     await page.getByRole("button",{name:"Send message"}).click();
     await expect(page.getByRole("heading",{name:"Connect your wallet"})).toBeVisible();
@@ -56,7 +56,7 @@ test("large context stays local and cannot bypass the chat input limit",async({p
 for(const width of [1440,390])test("network, inventory and cost methodology at "+width+"px",async({page})=>{
  await page.setViewportSize({width,height:960});await page.goto("/");
  await expect(page.locator(".compute-route")).toContainText("LOCAL MODEL");await expect(page.locator(".compute-route")).toContainText("IN DEVELOPMENT");
- await expect(page.locator(".compute-built")).toContainText("OPERATOR-CONFIRMED");await expect(page.locator(".compute-inventory")).toContainText("4× RTX 5090");await expect(page.locator(".compute-telemetry dd")).toHaveText(["—","—","—","—","—","—"]);
+ await expect(page.locator(".compute-built")).toContainText("DEDICATED GPU INFRASTRUCTURE");await expect(page.locator(".compute-inventory")).toContainText("4× RTX 5090");await expect(page.locator(".compute-telemetry dd")).toHaveText(["—","—","—","—","—","—"]);
  await page.locator("#llm-network").screenshot({path:"test-results/network-"+width+".png"});
  await page.goto("/pricing#cost-lab");await expect(page.locator(".comparison-result")).toContainText("95.0%");await page.getByLabel("Compare with").selectOption("luna");await expect(page.locator(".comparison-result")).toContainText("Same assumed cost.");await page.getByLabel("Monthly input · million tokens").fill("");await expect(page.getByRole("alert")).toContainText("Enter non-negative");await page.getByLabel("Monthly input · million tokens").fill("1");await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.goto("/docs#revenue");await expect(page.getByRole("heading",{name:"Compute has a real cost."})).toBeVisible();
