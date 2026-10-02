@@ -10,6 +10,7 @@ import {configuredModel,executeCustom,pricedCost,type CustomModel} from "./custo
 import {hostedSelected,hostedModel,hostedSnapshot,refreshHostedBalance,refreshHostedCatalog,executeHosted} from "./hosted-provider";
 import {servingMessages} from "./identity";
 import {CREDIT_PACKAGES} from "./packages";
+import {renewServing} from "./serving-maintenance";
 import {canonical,quote,verify,reconcile,startIndex,tickIndex,sendTransaction} from "./chain";
 const json=(data:unknown,status=200,headers:Record<string,string>={})=>Response.json(data,{status,headers:{"Cache-Control":"no-store",...headers}});
 function text(b:Record<string,unknown>,name:string,max=200){const x=b[name];check(typeof x==="string"&&x.length>0&&x.length<=max,"Invalid "+name);return x;}
@@ -70,5 +71,5 @@ export class Service {
  if(path==="/api/admin/recover"){this.f.recover();return json({ok:true});}
  if(path==="/api/admin/reconcile"){const id=text(b,"id",50),input=Number(b.input),output=Number(b.output),proof=text(b,"proof",500);check(new URL(proof).protocol==="https:","Usage evidence requires a public HTTPS receipt without private prompts");const request=this.f.request(id);check(request,"Unknown request",404);const charge=request.input_price===null||request.output_price===null?cost(input,output):pricedCost(input,output,request.input_price,request.output_price);return json(this.f.settle(id,charge,input,output,"operator_verified",proof));}
  throw new ServiceError("Unknown administration endpoint",404);}
- async maintenance(){this.f.recover();try{await this.prepareCapacity();}catch{}for(const q of rows<Quote>(this.db,"SELECT * FROM quotes WHERE state='issued' AND expires<? LIMIT 3",Date.now())){try{await reconcile(this.f,q);}catch{}}try{await tickIndex(this.f);}catch{return;}if(!this.providerReady()||this.f.budget().paused||!this.f.budget().daily_limit)return;try{const cfg=canonical(),now=Date.now(),date=new Date(now).toISOString().slice(0,10);if(!row(this.db,"SELECT id FROM epochs WHERE id=?",date))this.f.openEpoch(date,this.f.budget().daily_limit,cfg.minimum,Date.parse(date+"T00:00:00Z")+DAY);}catch{}}
+ async maintenance(){this.f.recover();if(hostedSelected()&&!this.f.budget().paused)await renewServing(this.db,()=>this.admin("/api/admin/provider/verify",{}));try{await this.prepareCapacity();}catch{}for(const q of rows<Quote>(this.db,"SELECT * FROM quotes WHERE state='issued' AND expires<? LIMIT 3",Date.now())){try{await reconcile(this.f,q);}catch{}}try{await tickIndex(this.f);}catch{return;}if(!this.providerReady()||this.f.budget().paused||!this.f.budget().daily_limit)return;try{const cfg=canonical(),now=Date.now(),date=new Date(now).toISOString().slice(0,10);if(!row(this.db,"SELECT id FROM epochs WHERE id=?",date))this.f.openEpoch(date,this.f.budget().daily_limit,cfg.minimum,Date.parse(date+"T00:00:00Z")+DAY);}catch{}}
 }
