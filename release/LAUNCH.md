@@ -109,3 +109,6 @@ Local Language Model — $LLM. Built to turn eligible holdings into daily comput
 
 Launch thesis:
 AI is becoming a daily bill. $LLM is built to turn token utility into something you can use: compute. Eligible holders share a funded daily credit pool. Chat, code and build through one metered balance. Expand usage through purchases or verified burns. Grow the network around real demand and measured capacity.
+
+## Railway source roots
+The repository-root Dockerfile and railway.toml now deploy /release automatically. A Railway service whose Root Directory is /release continues to use release/Dockerfile unchanged. Both use Node 24 and /data/llm.sqlite. Attach a durable /data volume and use one replica; do not remove the volume or reset balances. PUBLIC_URL defaults to the canonical Vercel frontend; set it to the exact frontend HTTPS origin if using a different domain. LLM_BACKEND_URL on Vercel must be the Railway service's generated public HTTPS domain, not a Railway dashboard/project URL.
