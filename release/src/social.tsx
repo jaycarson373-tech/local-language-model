@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from "react";
 import links from "../public/brand/links.json";
 import {contractAddress,xProfile} from "./social-config";
-export function BrandSymbol(){return <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M6 8h4v14h14v4H6z" fill="#f1f0eb"/><path d="M14 7h9v4h-9zm10 6h4v8h-4z" fill="#f1f0eb"/><path d="M24 7h4v4h-4z" fill="#c6f75d"/></svg>;}
+export function BrandSymbol(){return <img className="official-brand-logo" src="/brand/local-llm-server-cube.jpg" alt="" aria-hidden="true" width="40" height="40"/>;}
 export function SocialControls({mint}:{mint?:unknown}){const ca=contractAddress(mint||import.meta.env.VITE_LLM_CA||links.contractAddress),x=xProfile(import.meta.env.VITE_X_URL||links.xUrl),[state,setState]=useState(""),input=useRef<HTMLInputElement>(null),timer=useRef<ReturnType<typeof setTimeout>|null>(null);
 useEffect(()=>()=>{if(timer.current)clearTimeout(timer.current);},[]);
 useEffect(()=>{setState("");},[ca]);
