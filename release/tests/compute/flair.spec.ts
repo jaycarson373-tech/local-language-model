@@ -4,4 +4,20 @@ for(const width of [1440,390,320])test("manifesto and copyable private setup at 
  await page.goto("/setup");await expect(page.getByRole("heading",{name:"Connect. Stock. Open checkout."})).toBeVisible();await page.getByRole("textbox",{name:"Railway HTTPS origin"}).fill("https://private-service.up.railway.app");await page.getByRole("textbox",{name:"USDC recipient wallet"}).fill("11111111111111111111111111111111");await expect(page.getByRole("textbox",{name:"Railway variables",exact:true})).toHaveValue(/HOSTED_API_KEY=/);const value=await page.getByRole("textbox",{name:"Railway variables",exact:true}).inputValue();expect(value).toContain("HOSTED_API_KEY=\n");expect(value).toContain("LLM_MARKUP_BPS=23000");expect(value).toContain("PAYMENT_RECIPIENT=11111111111111111111111111111111");await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.goto("/credits");await expect(page.getByRole("button",{name:"$1",exact:true})).toHaveAttribute("aria-pressed","true");for(const dollars of [5,10,20])await expect(page.getByRole("button",{name:"$"+dollars+" coming soon",exact:true})).toBeDisabled();
 });
-test("reduced-motion preference disables ornamental animations",async({page})=>{await page.emulateMedia({reducedMotion:"reduce"});await page.goto("/");expect(await page.locator(".compute-panel-scan").evaluate(node=>getComputedStyle(node).display)).toBe("none");await expect(page.getByRole("heading",{name:"HOLD $LLM. USE AI."})).toBeVisible();});
+test("reduced-motion preference disables ornamental animations",async({page})=>{await page.emulateMedia({reducedMotion:"reduce"});await page.goto("/");expect(await page.locator(".compute-panel-scan").evaluate(node=>getComputedStyle(node).display)).toBe("none");expect(await page.locator(".compute-circuit-run").first().evaluate(n=>getComputedStyle(n).animationName)).toBe("none");await expect(page.getByRole("button",{name:"Pause decorative motion"})).toBeHidden();await expect(page.getByRole("heading",{name:"HOLD $LLM. USE AI."})).toBeVisible();});
+
+for(const width of [1440,390,320])test("visible architectural motion can be paused at "+width+"px",async({page})=>{
+ await page.emulateMedia({reducedMotion:"no-preference"});await page.setViewportSize({width,height:960});await page.goto("/");
+ await expect(page.locator(".compute-atmosphere")).toBeVisible();await expect(page.locator(".compute-atmosphere")).toContainText("ARCHITECTURE PREVIEW");
+ await expect.poll(()=>page.locator(".compute-circuit-run").first().evaluate(n=>getComputedStyle(n).animationName)).toBe("compute-circuit-flow");
+ await page.getByRole("button",{name:"Pause decorative motion"}).click();await expect(page.getByRole("button",{name:"Resume decorative motion"})).toHaveAttribute("aria-pressed","true");
+ expect(await page.locator(".compute-circuit-run").first().evaluate(n=>getComputedStyle(n).animationPlayState)).toBe("paused");
+ await page.getByRole("button",{name:"Resume decorative motion"}).click();expect(await page.locator(".compute-circuit-run").first().evaluate(n=>getComputedStyle(n).animationPlayState)).toBe("running");
+ await expect(page.locator(".compute-telemetry dd")).toHaveText(["—","—","—","—","—","—"]);await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:"test-results/kinetic-hero-"+width+".png"});
+ await page.locator(".compute-funding-policy").scrollIntoViewIfNeeded();await expect(page.locator(".compute-funding-policy")).toContainText("100% of creator fees received will be used for infrastructure, hardware and scaling");await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+test("daily claim stays disabled even when returned holder allocation is claimable",async({page})=>{
+ await page.route("**/api/me",route=>route.fulfill({json:{wallet:"11111111111111111111111111111111",balance:1000000000,conversations:[],holder:{balance:"1000000",decimals:0,qualified:true,claimAvailable:true,allocation:100000000,epoch:"controlled"}}}));
+ await page.goto("/credits");await expect(page.getByRole("button",{name:"Claim daily credits"})).toBeDisabled();await expect(page.locator(".allowance-action")).toContainText("Claim deadline");
+});
