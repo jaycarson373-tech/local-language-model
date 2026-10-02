@@ -3,15 +3,25 @@
 const unavailable="Account access is not live yet. Wallet sign-in, daily claims and transactions will open with the account service.";
 const model={id:"local-language-model",name:"LocalLM",provider:"Local Language Model",inputPerMillion:null,outputPerMillion:null,context:null,maxOutput:null,capabilities:[],available:false,status:"In development"};
 function json(res,status,value){res.statusCode=status;res.setHeader("Content-Type","application/json; charset=utf-8");res.setHeader("Cache-Control","no-store");res.end(JSON.stringify(value));}
+// Normalize copy/paste formatting only. Never relax HTTPS, credential, path or self-loop checks.
+export function normalizeBackendUrl(value){
+ if(typeof value!=="string")return "";
+ let normalized=value.trim();
+ if(normalized.startsWith("LLM_BACKEND_URL="))normalized=normalized.slice("LLM_BACKEND_URL=".length).trim();
+ if(normalized.length>=2&&((normalized.startsWith('"')&&normalized.endsWith('"'))||(normalized.startsWith("'")&&normalized.endsWith("'"))))normalized=normalized.slice(1,-1).trim();
+ // Only Railway's canonical public-host suffix gets an inferred HTTPS scheme.
+ if(/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.up\.railway\.app\/?$/i.test(normalized))normalized="https://"+normalized;
+ return normalized;
+}
 export function createGateway(options={}){
  return async function gateway(req,res){
-  res.setHeader("Cache-Control","no-store");res.setHeader("X-Content-Type-Options","nosniff");res.setHeader("X-LLM-Gateway-Version","url-diagnostics-1");
+  res.setHeader("Cache-Control","no-store");res.setHeader("X-Content-Type-Options","nosniff");res.setHeader("X-LLM-Gateway-Version","url-diagnostics-2");
   const incoming=new URL(req.url||"/","http://gateway.invalid");
   const target=incoming.searchParams.get("target")??(typeof req.query?.target==="string"?req.query.target:incoming.pathname.startsWith("/api/")?incoming.pathname.slice(5):"");
   if(!/^[a-zA-Z0-9][a-zA-Z0-9/_-]{0,160}$/.test(target)||target==="gateway"||target.includes("//"))return json(res,400,{error:"Invalid API route"});
   const method=req.method||"GET";
   if(!["GET","POST","HEAD"].includes(method))return json(res,405,{error:"Unsupported method"});
-  const configured=options.backendUrl??process.env.LLM_BACKEND_URL;
+  const configured=normalizeBackendUrl(options.backendUrl??process.env.LLM_BACKEND_URL);
   if(!configured){
    if(target==="buybacks"&&method==="GET")return json(res,200,{status:"planned",network:"solana-mainnet",transactions:[],cumulativeBurnAtomic:null,decimals:null,mint:null,policy:null,observedAt:null});
    if(target==="network"&&method==="GET")return json(res,200,{status:"model_in_development",inferenceConnected:false,telemetryStatus:"not_connected",observedAt:null,source:null,metrics:{gpusOnline:null,aggregateVramBytes:null,requestsServed:null,tokensGenerated:null,utilizationBps:null,modelVersion:null},architecture:[{id:"user",label:"USER",state:"interface_ready",detail:"Workspace + developer API"},{id:"credit_layer",label:"LLM CREDIT LAYER",state:"backend_not_connected",detail:"Persistent account service pending"},{id:"request_router",label:"REQUEST ROUTER",state:"relay_ready",detail:"Same-origin API relay"},{id:"local_model",label:"LOCAL MODEL",state:"in_development",detail:"Custom endpoint not connected"},{id:"gpu_cluster",label:"GPU CLUSTER",state:"telemetry_not_connected",detail:"Awaiting hardware collector"},{id:"response",label:"RESPONSE",state:"awaiting_model",detail:"No serving model connected"}]});

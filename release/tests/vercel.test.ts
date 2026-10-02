@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createServer,type Server,type RequestListener} from "node:http";
 import {once} from "node:events";
-import {createGateway} from "../api/gateway.js";
+import {createGateway,normalizeBackendUrl} from "../api/gateway.js";
 async function serve(handler:RequestListener){const server=createServer(handler);server.listen(0,"127.0.0.1");await once(server,"listening");const address=server.address();assert(address&&typeof address!=="string");return {server,url:"http://127.0.0.1:"+address.port};}
 async function close(server:Server){server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));}
 test("Vercel preview reports no model and never simulates account or financial operations",async()=>{
@@ -45,10 +45,26 @@ test("backend URL failures report the exact configuration problem without disclo
   ["https://backend.example/api/status","BACKEND_URL_MUST_BE_ORIGIN_ONLY"]
  ];
  for(const [backendUrl,issue] of cases){const app=await serve(createGateway({backendUrl}));
-  try{const response=await fetch(app.url+"/api/status");assert.equal(response.status,503);assert.equal(response.headers.get("x-llm-gateway-version"),"url-diagnostics-1");const data=await response.json();assert.equal(data.configurationIssue,issue);assert.ok(!JSON.stringify(data).includes(backendUrl));assert.ok(!JSON.stringify(data).includes("secret"));}finally{await close(app.server);}
+  try{const response=await fetch(app.url+"/api/status");assert.equal(response.status,503);assert.equal(response.headers.get("x-llm-gateway-version"),"url-diagnostics-2");const data=await response.json();assert.equal(data.configurationIssue,issue);assert.ok(!JSON.stringify(data).includes(backendUrl));assert.ok(!JSON.stringify(data).includes("secret"));}finally{await close(app.server);}
  }
 });
 test("a backend pointing at the frontend is specifically rejected",async()=>{
  let backendUrl="";const app=await serve(async(req,res)=>{await createGateway({backendUrl,allowHttpForTest:true})(req,res);});backendUrl=app.url;
  try{const response=await fetch(app.url+"/api/status");assert.equal(response.status,503);assert.equal((await response.json()).configurationIssue,"BACKEND_URL_POINTS_TO_FRONTEND");}finally{await close(app.server);}
+});
+
+test("backend URL copy-paste normalization preserves the URL security boundary",()=>{
+ const origin="https://local-language-model-production.up.railway.app";
+ for(const value of [origin," "+origin+" ","\""+origin+"\"","'"+origin+"'","LLM_BACKEND_URL="+origin,"LLM_BACKEND_URL=\""+origin+"\"","local-language-model-production.up.railway.app"])
+  assert.equal(new URL(normalizeBackendUrl(value)).origin,origin);
+ for(const value of ["http://backend.example","https://backend.example/api","https://private:secret@backend.example","https://backend.example?token=secret"])
+  assert.equal(normalizeBackendUrl(value),value);
+ assert.equal(normalizeBackendUrl("backend.example"),"backend.example");
+ assert.equal(normalizeBackendUrl("railway.com/project/id"),"railway.com/project/id");
+ assert.equal(normalizeBackendUrl("x.up.railway.app.attacker.example"),"x.up.railway.app.attacker.example");
+});
+test("a quoted backend assignment actually relays authenticated requests",async()=>{
+ const upstream=await serve((req,res)=>{assert.equal(req.url,"/api/me");assert.equal(req.headers.cookie,"llm_session=our-session");res.setHeader("Content-Type","application/json");res.end(JSON.stringify({account:"actual upstream"}));});
+ const app=await serve(createGateway({backendUrl:"LLM_BACKEND_URL=\""+upstream.url+"\"",allowHttpForTest:true}));
+ try{const response=await fetch(app.url+"/api/me",{headers:{Cookie:"llm_session=our-session"}});assert.equal(response.status,200);assert.deepEqual(await response.json(),{account:"actual upstream"});}finally{await close(app.server);await close(upstream.server);}
 });
