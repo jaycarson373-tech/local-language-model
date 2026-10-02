@@ -7,5 +7,5 @@ COPY release/ ./
 RUN npm run build
 ENV NODE_ENV=production PORT=3000 DB_PATH=/data/llm.sqlite PUBLIC_URL=https://local-language-model.vercel.app
 EXPOSE 3000
-VOLUME ["/data"]
+# Railway mounts the persistent /data volume through service configuration.
 CMD ["npm","start"]
