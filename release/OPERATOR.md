@@ -2,6 +2,9 @@
 
 The standalone app is in release/. It uses Node.js 24, React/Vite and a persistent SQLite database. No hosted editor is required. Run one app instance per persistent ledger, with HTTPS terminated by your host or reverse proxy. PUBLIC_URL must be the exact public HTTPS origin in production. Do not place privileged keys in VITE_ variables, source control or browser code.
 
+## Current funded serving
+FUNDED-SETUP.md describes the launch adapter, paid stock import, configurable margin, private routing, exact usage accounting and fixed $2 / $5 / $10 checkout. The durable ledger remains unchanged apart from additive price/cost metadata. No Supabase setup is required.
+
 ## Secure configuration
 
 For local development copy release/.env.example to release/.env, then run npm run dev inside release/. The helper loads .env server-side. For production use your host's secret manager; npm start can load a local .env when present.

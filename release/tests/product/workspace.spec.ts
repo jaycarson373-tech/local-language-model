@@ -25,7 +25,7 @@ for(const width of [1440,390,320]) {
     await expect(page.getByRole("textbox",{name:"Message"})).toHaveValue("Keep evidence.\n\nExplain uncertainty.");
     await expect(page.getByRole("button",{name:/LOCAL LLM/})).toBeVisible();
     await page.getByRole("button",{name:/LOCAL LLM/}).click();
-    await expect(page.locator(".model-menu")).toContainText("Custom model · Local Language Model");
+    await expect(page.locator(".model-menu")).toContainText("LocalLM · Local Language Model");
     await page.getByRole("button",{name:/LOCAL LLM/}).click();
     await page.getByRole("button",{name:"Send message"}).click();
     await expect(page.getByRole("heading",{name:"Connect your wallet"})).toBeVisible();

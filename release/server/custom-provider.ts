@@ -1,7 +1,7 @@
 import {createHash} from "node:crypto";
 import {check,integer,units} from "./money";
 import type {Message,Usage} from "./provider";
-export type CustomModel={endpoint:string,key:string,upstreamModel:string,provider:string,inputPrice:number,outputPrice:number,context:number,maxOutput:number,fingerprint:string};
+export type CustomModel={endpoint:string,key:string,upstreamModel:string,provider:string,inputPrice:number,outputPrice:number,context:number,maxOutput:number,fingerprint:string,transport?:"hosted-credit-sse",providerTag?:string,allowedModelIds?:string[],providerInputPrice?:number,providerOutputPrice?:number,markupBps?:number,pricingObservedAt?:number};
 export function configuredModel():CustomModel|null{try{
  const endpoint=process.env.LLM_MODEL_CHAT_URL,key=process.env.LLM_MODEL_API_KEY,upstreamModel=process.env.LLM_MODEL_ID,provider=process.env.LLM_MODEL_PROVIDER;
  if(process.env.LLM_MODEL_PROTOCOL!=="openai-chat-sse"||!endpoint||!key||!upstreamModel||!provider)return null;

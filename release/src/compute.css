@@ -83,3 +83,43 @@ body{background:var(--bg)}
 /* Official supplied logo; preserve the original artwork and white background. */
 .official-brand-logo{display:block;width:100%;height:100%;object-fit:contain;border-radius:4px;background:#fff}.compute-logo,.compute-mini-logo,.brand-mark,.model-mark{flex-shrink:0;overflow:hidden}.compute-logo{width:40px;height:40px}.brand-mark{padding:0;width:38px;height:38px}.compute-mini-logo{width:30px;height:30px}
 @media(max-width:760px){.compute-logo{width:32px;height:32px}}
+
+.credit-packages{border:0;padding:0;margin:20px 0 12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.credit-packages legend{font:10px ui-monospace,monospace;color:#a5aaa6;padding:0;margin-bottom:12px}.credit-packages button{padding:17px 8px;min-height:88px;border:1px solid #3a4140;border-radius:2px;background:transparent;text-align:left}.credit-packages button[aria-pressed=true]{border-color:#d8dfd4;background:#202522}.credit-packages strong{display:block;font:24px "Space Grotesk",sans-serif;color:#f1f0eb}.credit-packages button span{display:block;font-size:9px;color:#aeb7ae;margin-top:8px}.package-summary{font-size:11px!important;min-height:0!important}.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.setup-grid input{min-width:0}.setup-copy{margin-top:22px}.setup-copy textarea{width:100%;min-height:280px;padding:16px;border:1px solid #424946;border-radius:3px;background:#121516;color:#e8ede3;font:11px/1.8 ui-monospace,monospace;resize:vertical}.setup-copy header{display:flex;justify-content:space-between;align-items:center;gap:12px}.setup-copy header h2{margin:0}.setup-note{font-size:11px;color:#acb5ab;line-height:1.8}
+@media(max-width:760px){.setup-grid{grid-template-columns:1fr}.credit-packages button{padding:16px 7px}.credit-packages button span{font-size:8px}.setup-copy textarea{font-size:10px}}
+
+/* Technical accents are decorative. They do not represent live network traffic. */
+.compute-title-line{display:inline-block}
+.compute-token-type{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-weight:700;letter-spacing:-.075em;position:relative}
+.compute-type-corner{position:absolute;right:-.035em;top:.02em;width:.13em;height:.13em;border-top:2px solid var(--compute-accent,#c5f569);border-right:2px solid var(--compute-accent,#c5f569)}
+.compute-atmosphere{position:relative;overflow:hidden}
+.compute-panel-index{position:absolute;top:22px;left:24px;font:10px/1.3 "SFMono-Regular",Consolas,monospace;letter-spacing:.12em;color:#727773}
+.compute-panel-scan{position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,#e2efd70a 49%,#c5f56918 50%,transparent 52%);transform:translateX(-130%)}
+.compute-entered .compute-panel-scan{animation:compute-panel-sweep 1.5s ease-out .18s both}
+.compute-entered .compute-title-line{animation:compute-type-enter .65s cubic-bezier(.2,.7,.3,1) both}
+.compute-entered .compute-title-line:last-child{animation-delay:.09s}
+.compute-page button,.compute-page .compute-button{transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.compute-page .compute-button:hover{transform:translateY(-2px)}
+.compute-pipeline li,.compute-route li{position:relative}
+.compute-pipeline li:after,.compute-route li:after{content:"";position:absolute;bottom:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,#a7b39280,transparent);transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+.compute-pipeline li:hover:after,.compute-route li:hover:after{transform:scaleX(1)}
+.compute-route-connected li:after{transform:scaleX(1);background:#c5f56980}
+.compute-manifesto{margin-top:110px;padding:44px 0 64px;border-top:1px solid #333633;border-bottom:1px solid #333633}
+.compute-manifesto-label{display:flex;justify-content:space-between;gap:24px;margin-bottom:38px;color:#70756f;font:11px/1.5 "SFMono-Regular",Consolas,monospace;letter-spacing:.08em}
+.compute-manifesto h2{font-size:clamp(40px,6.4vw,88px);line-height:.96;letter-spacing:-.055em;font-weight:650;margin:0 0 28px}
+.compute-manifesto h2>span{font-family:"SFMono-Regular",Consolas,monospace;font-weight:500;letter-spacing:-.085em;color:#c5f569}
+.compute-manifesto-intro{font-size:18px;line-height:1.65;color:#abaeaa;max-width:660px;margin-bottom:42px}
+.compute-principles{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px}
+.compute-principles li{border-top:1px solid #333633;padding-top:24px}
+.compute-principles li>span{font:11px/1.4 "SFMono-Regular",Consolas,monospace;color:#7e8579}
+.compute-principles h3{font:600 15px/1.5 "SFMono-Regular",Consolas,monospace;letter-spacing:-.02em;margin:16px 0 12px;color:#eeefea}
+.compute-principles p{font-size:14px;line-height:1.7;margin:0;color:#949a91}
+.compute-manifesto-signoff{margin-top:44px;display:flex;gap:16px;align-items:center;color:#a4aaa0;font:11px/1.6 "SFMono-Regular",Consolas,monospace;letter-spacing:.04em}
+.compute-manifesto-signoff svg{width:34px;height:34px;flex:none}
+.compute-manifesto-signoff a{margin-left:auto;color:#e2e6dc;text-decoration:none}
+.compute-manifesto-signoff a:hover{color:#c5f569}
+@keyframes compute-panel-sweep{to{transform:translateX(130%)}}
+@keyframes compute-type-enter{from{opacity:.45;transform:translateY(10px);filter:blur(3px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@media(max-width:700px){.compute-manifesto{margin-top:70px;padding-top:30px}.compute-manifesto-label{flex-wrap:wrap;margin-bottom:26px;gap:8px}.compute-manifesto-intro{font-size:16px}.compute-principles{grid-template-columns:1fr;gap:24px}.compute-principles li{display:grid;grid-template-columns:40px 1fr;gap:8px}.compute-principles h3{margin:0 0 10px}.compute-manifesto-signoff{flex-wrap:wrap}.compute-manifesto-signoff a{width:100%;margin:10px 0 0 50px}.compute-panel-index{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.compute-page *,.compute-page *:before,.compute-page *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.compute-panel-scan{display:none}}
+
+.compute-manifesto-signoff .official-brand-logo{width:34px;height:34px;flex:none}

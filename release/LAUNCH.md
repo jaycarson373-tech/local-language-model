@@ -2,6 +2,9 @@
 Website: https://local-language-model.vercel.app
 Source: https://github.com/jaycarson373-tech/local-language-model
 
+## Funded checkout setup
+For the current private serving route and $2 / $5 / $10 packages, use FUNDED-SETUP.md and the copyable /setup page. The same accounts, ledger, balances and GPU inventory remain in place.
+
 ## What is ready
 The interface, workspace, credit ledger, wallet signatures, scoped API keys, finalized receipt verification, GPU collector and custom-model SSE adapter are implemented. Blank branding values never invent a contract address or X account. Controlled test coverage is different from production transaction or model evidence.
 

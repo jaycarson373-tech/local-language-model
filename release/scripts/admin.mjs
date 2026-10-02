@@ -1,6 +1,6 @@
 import {existsSync,readFileSync} from "node:fs";
 if(existsSync(".env"))process.loadEnvFile(".env");
-const allowed=new Set(["fund","budget","provider/verify","provider/reconcile","index/start","index/tick","epoch","recover","reconcile"]);
+const allowed=new Set(["compute/check","compute/stock","fund","budget","provider/verify","provider/reconcile","index/start","index/tick","epoch","recover","reconcile"]);
 const [command,flag,path]=process.argv.slice(2);
 if(!allowed.has(command)||((flag||path)&&(flag!=="--body-file"||!path))){console.error("Usage: node scripts/admin.mjs COMMAND [--body-file PRIVATE_JSON_FILE]");process.exit(1);}
 const origin=process.env.LLM_ADMIN_BASE_URL||process.env.PUBLIC_URL,key=process.env.ADMIN_KEY;
