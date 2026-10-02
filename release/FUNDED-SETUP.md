@@ -10,12 +10,12 @@ Enter the Railway HTTPS origin, public USDC recipient, configurable service marg
 3. Complete private values in Railway:
    - HOSTED_API_BASE_URL: the paid supplier's HTTPS API base ending /api/v1.
    - HOSTED_API_KEY: a dedicated paid inference key, not a wallet key.
-   - HOSTED_MODEL: exact model identifier from your private catalog.
+   - HOSTED_MODEL: auto-cheapest for automatic paid-text model selection; an exact private model identifier may override it.
    - HOSTED_PROVIDER_TAG: optional exact endpoint tag; empty chooses the lowest combined flat-rate compatible catalog endpoint. The chosen endpoint is pinned with no fallback.
    - SOLANA_RPC_URL: finalized mainnet archive RPC.
    - ADMIN_KEY: at least 32 random characters.
    - PAYMENT_RECIPIENT: public receiving wallet; its canonical Solana USDC associated account must exist.
-   - LLM_MARKUP_BPS: service margin, starter 2000 (20%); not a token reward promise.
+   - LLM_MARKUP_BPS: service margin, starter 23000 (230% markup, 3.3× retail rates); not a token reward promise.
    - LLM_CONTEXT_TOKENS and LLM_MAX_OUTPUT_TOKENS: service ceilings, bounded by verified catalog limits.
 4. Vercel: LLM_BACKEND_URL is the Railway HTTPS origin. Redeploy. No serving secrets belong in VITE_ variables.
 5. Load cleared paid credits into the serving account.
@@ -55,3 +55,9 @@ Provider verification lasts 24 hours. Schedule a funded renewal before expiry. U
 
 ## Launch inventory
 Set PURCHASE_ORDER_LIMIT=5 for five total completed or reserved purchase orders. The limit is checked atomically with every new quote. Ambiguous issued transactions keep their inventory slot and funding reservation. Finalized receipts create account credits directly. No upstream API key is sold or shared. Restock the private serving balance, import new cleared stock, then raise the limit to 10 for the next five orders. GET /api/status exposes remaining order inventory; /api/admin/compute/check includes the same stock report for the owner. $5, $10 and $20 packages are displayed as coming soon and cannot create new quotes. Historical valid quotes keep their original amounts.
+
+## Retail rates and funded costs
+LLM_MARKUP_BPS=23000 means retail input/output rates are 3.3× verified serving rates, not a 3.3× dollar balance. $1 paid always grants $1 of service credit. Provider funding is tracked in actual cost units separately from retail usage. Each lot, epoch and quote reserves a conservative rounded-up provider-cost obligation. Each request snapshots retail and underlying rates plus its funding reservation. Settlement debits retail usage from the account and actual verified serving cost from funding. Old rows and ledger entries are preserved. At zero buffer and before overhead, $5.70 of verified serving capacity corresponds to at most $18.81 in retail usage. With the default $1 provider-cost buffer it corresponds to at most $15.51 before probe costs. Do not sell a nineteenth $1 package from $5.70 of serving balance at 3.3× rates: it is insufficient even before the safety buffer. Keep a single private paid key and restock the account instead of distributing upstream secrets.
+
+## Automatic model selection
+HOSTED_MODEL=auto-cheapest scans the live text-model catalog, excludes free/zero-priced entries and incompatible context or per-request pricing, then inspects endpoints for up to sixteen lowest advertised combined input/output rate candidates. Only compatible flat-priced endpoints enter selection. The lowest verified combined prompt/completion price wins; this is a balanced text workload criterion, not a quality ranking or a promise of lowest cost for every input/output ratio. The exact chosen model and provider stay in private admin configuration. Execution pins that choice with no fallback and must pass a funded streaming identity/usage/cost check before availability. Prices are published as LocalLM service rates.

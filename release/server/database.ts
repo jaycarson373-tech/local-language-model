@@ -30,7 +30,9 @@ const requestColumns=new Set((db.prepare("PRAGMA table_info(requests)").all() as
 for(const [name,type] of [["input_price","INTEGER"],["output_price","INTEGER"],["model_id","TEXT"],["catalog_fingerprint","TEXT"]])if(!requestColumns.has(name))db.exec("ALTER TABLE requests ADD COLUMN "+name+" "+type);
 db.prepare("INSERT OR IGNORE INTO schema_migrations VALUES(3,?)").run(Date.now());
 if(!requestColumns.has("provider_cost"))db.exec("ALTER TABLE requests ADD COLUMN provider_cost INTEGER");
-db.prepare("INSERT OR IGNORE INTO schema_migrations VALUES(4,?)").run(Date.now());return db;}
+db.prepare("INSERT OR IGNORE INTO schema_migrations VALUES(4,?)").run(Date.now());
+for(const [name,type] of [["funding_charge","INTEGER"],["funding_reservation","INTEGER"],["provider_input_price","INTEGER"],["provider_output_price","INTEGER"]])if(!requestColumns.has(name))db.exec("ALTER TABLE requests ADD COLUMN "+name+" "+type);
+db.prepare("INSERT OR IGNORE INTO schema_migrations VALUES(5,?)").run(Date.now());return db;}
 export type DB=ReturnType<typeof database>;
 export function row<T>(db:DB,sql:string,...args:(string|number|null)[]){return db.prepare(sql).get(...args) as T|undefined;}
 export function rows<T>(db:DB,sql:string,...args:(string|number|null)[]){return db.prepare(sql).all(...args) as T[];}
