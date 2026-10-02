@@ -17,6 +17,7 @@ test("deployed brand assets, blank copy control and X button are available",asyn
  test.setTimeout(180000);
  await expect.poll(async()=>{const r=await request.get(site+"/brand/llm-symbol.svg");return (await r.text()).includes('viewBox="0 0 32 32"');},{timeout:150000,intervals:[3000,5000,10000]}).toBe(true);
  const logo=await request.get(site+"/brand/llm-symbol.svg");expect(logo.headers()["content-type"]).toContain("image/svg+xml");expect(await logo.text()).not.toContain("<text");
+ for(const asset of ["llm-logo.png","llm-x-banner.png"]){const image=await request.get(site+"/brand/"+asset);expect(image.status()).toBe(200);expect(image.headers()["content-type"]).toContain("image/png");}
  const banner=await request.get(site+"/brand/llm-banner.svg");expect(await banner.text()).toContain('width="1500" height="500"');
  for(const width of [1440,390,320]){await page.setViewportSize({width,height:900});await page.goto(site);await expect(page.getByRole("textbox",{name:"Contract address"})).toHaveValue("");await expect(page.getByRole("button",{name:"Copy contract address"})).toBeDisabled();await expect(page.getByRole("button",{name:"Local Language Model on X"})).toBeVisible();await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
 });

@@ -90,6 +90,8 @@ node scripts/admin.mjs budget --body-file /PRIVATE/paused-budget.json
 Use pause=true and chosen future dailyLimit/buffer. Existing lots, balances, records and valid quotes remain supported. Back up the durable database before migrations; do not edit ledger rows or reset the database.
 
 ## Brand downloads
+/brand/llm-logo.png — generated symbol-only profile logo, PNG.
+/brand/llm-x-banner.png — matching generated X banner, PNG.
 /brand/llm-symbol.svg — 1000×1000, symbol only.
 /brand/llm-symbol-transparent.svg — transparent symbol.
 /brand/llm-banner.svg — 1500×500 X banner.
