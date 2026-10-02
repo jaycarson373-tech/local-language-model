@@ -33,3 +33,22 @@ test("Vercel gateway rejects unsafe routes, insecure backend, redirects and over
   assert.equal((await fetch(app.url+"/api/me")).status,502);assert.equal(calls,1);
  }finally{await close(app.server);await close(upstream.server);}
 });
+
+test("backend URL failures report the exact configuration problem without disclosing its value",async()=>{
+ const cases=[
+  ["not-a-url","BACKEND_URL_NOT_PARSEABLE"],
+  ["http://backend.example","BACKEND_URL_REQUIRES_HTTPS"],
+  ["https://private-name:secret@backend.example","BACKEND_URL_CONTAINS_CREDENTIALS"],
+  ["https://backend.example?token=secret","BACKEND_URL_CONTAINS_QUERY_OR_FRAGMENT"],
+  ["https://backend.example/#secret","BACKEND_URL_CONTAINS_QUERY_OR_FRAGMENT"],
+  ["https://backend.example/api","BACKEND_URL_MUST_BE_ORIGIN_ONLY"],
+  ["https://backend.example/api/status","BACKEND_URL_MUST_BE_ORIGIN_ONLY"]
+ ];
+ for(const [backendUrl,issue] of cases){const app=await serve(createGateway({backendUrl}));
+  try{const response=await fetch(app.url+"/api/status");assert.equal(response.status,503);assert.equal(response.headers.get("x-llm-gateway-version"),"url-diagnostics-1");const data=await response.json();assert.equal(data.configurationIssue,issue);assert.ok(!JSON.stringify(data).includes(backendUrl));assert.ok(!JSON.stringify(data).includes("secret"));}finally{await close(app.server);}
+ }
+});
+test("a backend pointing at the frontend is specifically rejected",async()=>{
+ let backendUrl="";const app=await serve(async(req,res)=>{await createGateway({backendUrl,allowHttpForTest:true})(req,res);});backendUrl=app.url;
+ try{const response=await fetch(app.url+"/api/status");assert.equal(response.status,503);assert.equal((await response.json()).configurationIssue,"BACKEND_URL_POINTS_TO_FRONTEND");}finally{await close(app.server);}
+});

@@ -5,7 +5,7 @@ const model={id:"local-language-model",name:"LocalLM",provider:"Local Language M
 function json(res,status,value){res.statusCode=status;res.setHeader("Content-Type","application/json; charset=utf-8");res.setHeader("Cache-Control","no-store");res.end(JSON.stringify(value));}
 export function createGateway(options={}){
  return async function gateway(req,res){
-  res.setHeader("Cache-Control","no-store");res.setHeader("X-Content-Type-Options","nosniff");
+  res.setHeader("Cache-Control","no-store");res.setHeader("X-Content-Type-Options","nosniff");res.setHeader("X-LLM-Gateway-Version","url-diagnostics-1");
   const incoming=new URL(req.url||"/","http://gateway.invalid");
   const target=incoming.searchParams.get("target")??(typeof req.query?.target==="string"?req.query.target:incoming.pathname.startsWith("/api/")?incoming.pathname.slice(5):"");
   if(!/^[a-zA-Z0-9][a-zA-Z0-9/_-]{0,160}$/.test(target)||target==="gateway"||target.includes("//"))return json(res,400,{error:"Invalid API route"});
@@ -18,12 +18,15 @@ export function createGateway(options={}){
    if(target==="status"&&method==="GET")return json(res,200,{name:"Local Language Model",ticker:"LLM",mode:"preview",backendConfigured:false,model,dailyBudget:0,paused:true,purchaseConfigured:false,burnConfigured:false,customModel:{name:"Local Language Model",available:false,status:"In development"},message:unavailable});
    return json(res,503,{error:unavailable});
   }
-  let base;
+  let base,configurationIssue="BACKEND_URL_NOT_PARSEABLE";
   try{
    base=new URL(configured);
-   if((base.protocol!=="https:"&&!(options.allowHttpForTest&&base.protocol==="http:"))||base.username||base.password||base.search||base.hash||base.pathname!=="/")throw new Error("Invalid backend");
-   if(base.host===req.headers.host)throw new Error("Backend cannot point at this preview");
-  }catch{return json(res,503,{error:"The persistent backend URL must be a different, valid HTTPS origin."});}
+   if(base.protocol!=="https:"&&!(options.allowHttpForTest&&base.protocol==="http:")){configurationIssue="BACKEND_URL_REQUIRES_HTTPS";throw new Error();}
+   if(base.username||base.password){configurationIssue="BACKEND_URL_CONTAINS_CREDENTIALS";throw new Error();}
+   if(base.search||base.hash){configurationIssue="BACKEND_URL_CONTAINS_QUERY_OR_FRAGMENT";throw new Error();}
+   if(base.pathname!=="/"){configurationIssue="BACKEND_URL_MUST_BE_ORIGIN_ONLY";throw new Error();}
+   if(base.host===req.headers.host){configurationIssue="BACKEND_URL_POINTS_TO_FRONTEND";throw new Error();}
+  }catch{return json(res,503,{error:"The persistent backend URL must be a different, valid HTTPS origin.",configurationIssue});}
   const url=new URL("/api/"+target,base);
   for(const [key,value] of incoming.searchParams)if(key!=="target")url.searchParams.append(key,value);
   const headers=new Headers();
