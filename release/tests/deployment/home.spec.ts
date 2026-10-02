@@ -12,3 +12,11 @@ for(const width of [1440,390])test("public Vercel compute preview at "+width+"px
  await page.locator(".compute-hero").getByRole("button",{name:"CONNECT WALLET",exact:true}).click();await expect(page.getByRole("heading",{name:"Connect your wallet"})).toBeVisible();await page.getByRole("button",{name:"Close",exact:true}).click();
  await page.screenshot({path:"test-results/public-compute-"+width+".png",fullPage:true});expect(errors).toEqual([]);
 });
+
+test("deployed brand assets, blank copy control and X button are available",async({page,request})=>{
+ test.setTimeout(180000);
+ await expect.poll(async()=>{const r=await request.get(site+"/brand/llm-symbol.svg");return (await r.text()).includes('viewBox="0 0 32 32"');},{timeout:150000,intervals:[3000,5000,10000]}).toBe(true);
+ const logo=await request.get(site+"/brand/llm-symbol.svg");expect(logo.headers()["content-type"]).toContain("image/svg+xml");expect(await logo.text()).not.toContain("<text");
+ const banner=await request.get(site+"/brand/llm-banner.svg");expect(await banner.text()).toContain('width="1500" height="500"');
+ for(const width of [1440,390,320]){await page.setViewportSize({width,height:900});await page.goto(site);await expect(page.getByRole("textbox",{name:"Contract address"})).toHaveValue("");await expect(page.getByRole("button",{name:"Copy contract address"})).toBeDisabled();await expect(page.getByRole("button",{name:"Local Language Model on X"})).toBeVisible();await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
+});

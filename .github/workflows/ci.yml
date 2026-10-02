@@ -1,7 +1,5 @@
-name: Local Language Model checks
+name: Archived Local Language Model checks
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read

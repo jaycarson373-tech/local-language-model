@@ -1,7 +1,5 @@
-name: Release validation
+name: Archived Release validation
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
