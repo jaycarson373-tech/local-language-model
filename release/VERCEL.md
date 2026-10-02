@@ -25,7 +25,4 @@ Provider credentials, cleared funding and canonical-chain configuration are stil
 
 The Vercel tests exercise HTTP preview failure, authentication/cookie/origin forwarding, streamed upstream bytes, route/redirect safety and request size limits. They use a controlled test upstream; they do not claim paid-model or production-chain verification.
 
-The initial Vercel dashboard reported a failed deployment:
-https://vercel.com/jaycarson373-7760s-projects/local-language-model/4G2C24WUPyBH5jSahoregyDZRpJn
-
-No successful deployment URL is claimed until Vercel reports success. A GitHub Actions success verifies source/build/tests, not the Vercel account's deployment configuration.
+The public interface is deployed at https://local-language-model.vercel.app. Public-browser checks verify the actual homepage and API preview states. Production compute still requires the durable backend, verified custom endpoint, mint configuration and cleared funds. See LAUNCH.md for exact Railway and Vercel settings.

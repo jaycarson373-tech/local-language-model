@@ -25,7 +25,10 @@ CREATE TABLE IF NOT EXISTS sessions(hash TEXT PRIMARY KEY,wallet TEXT NOT NULL,e
 CREATE TABLE IF NOT EXISTS conversations(id TEXT PRIMARY KEY,wallet TEXT NOT NULL,title TEXT NOT NULL,messages TEXT NOT NULL DEFAULT '[]',created INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
 INSERT OR IGNORE INTO schema_migrations(version,applied_at) VALUES(1,unixepoch()*1000);
-`);const columns=new Set((db.prepare("PRAGMA table_info(quotes)").all() as {name:string}[]).map(x=>x.name));for(const [name,type] of [["mint","TEXT"],["decimals","INTEGER"],["recipient","TEXT"]])if(!columns.has(name))db.exec("ALTER TABLE quotes ADD COLUMN "+name+" "+type);db.prepare("INSERT OR IGNORE INTO schema_migrations VALUES(2,?)").run(Date.now());return db;}
+`);const columns=new Set((db.prepare("PRAGMA table_info(quotes)").all() as {name:string}[]).map(x=>x.name));for(const [name,type] of [["mint","TEXT"],["decimals","INTEGER"],["recipient","TEXT"]])if(!columns.has(name))db.exec("ALTER TABLE quotes ADD COLUMN "+name+" "+type);db.prepare("INSERT OR IGNORE INTO schema_migrations VALUES(2,?)").run(Date.now());
+const requestColumns=new Set((db.prepare("PRAGMA table_info(requests)").all() as {name:string}[]).map(x=>x.name));
+for(const [name,type] of [["input_price","INTEGER"],["output_price","INTEGER"],["model_id","TEXT"],["catalog_fingerprint","TEXT"]])if(!requestColumns.has(name))db.exec("ALTER TABLE requests ADD COLUMN "+name+" "+type);
+db.prepare("INSERT OR IGNORE INTO schema_migrations VALUES(3,?)").run(Date.now());return db;}
 export type DB=ReturnType<typeof database>;
 export function row<T>(db:DB,sql:string,...args:(string|number|null)[]){return db.prepare(sql).get(...args) as T|undefined;}
 export function rows<T>(db:DB,sql:string,...args:(string|number|null)[]){return db.prepare(sql).all(...args) as T[];}
