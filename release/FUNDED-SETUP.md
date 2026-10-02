@@ -21,7 +21,7 @@ Enter the Railway HTTPS origin, public USDC recipient, configurable service marg
 5. Load cleared paid credits into the serving account.
 6. Railway shell: node scripts/activate-funded.mjs --buffer 1
 
-The command verifies catalog and account/key balances, imports actual remaining stock on a clean funding baseline, checks a real streamed response and complete usage/cost, then sets dailyLimit=0 with pause=false. This enables only funded purchase quotes. A $2 minimum package requires more than $2 of free capacity after the chosen buffer and probe usage. A $10 quote needs $10 of free reserved capacity.
+The command verifies catalog and account/key balances, imports actual remaining stock on a clean funding baseline, checks a real streamed response and complete usage/cost, then sets dailyLimit=0 with pause=false. This enables only funded purchase quotes. The $1 launch package requires at least $1 of free capacity after the chosen buffer and probe usage. Larger packages are disabled.
 
 The setup does not require Supabase. Customer balances remain in the existing durable SQLite ledger. Do not replace or reset it. A clean baseline requirement stops stock import on a previously funded ledger: use its existing receipt-backed funding/reconciliation path instead of creating duplicate funds.
 
@@ -31,9 +31,8 @@ Stock is verified paid serving capacity, not money transferred from customer wal
 The external funding ceiling is refreshed and expires after 30 seconds. Quotes, epochs and dispatch cannot use an unknown or insufficient ceiling. Concurrent dispatch reservations are checked atomically. Only cleared funds and verified current capacity support new issuance. USDC proceeds are not automatically converted into supplier capacity.
 
 ## Packages
-2 USDC → $2 service credits.
-5 USDC → $5 service credits.
-10 USDC → $10 service credits.
+1 USDC → $1 service credits.
+$5, $10 and $20 packages are coming soon and cannot create quotes.
 Network fees are separate. Purchased credits do not expire daily and are credited directly to the authenticated account after finalized receipt verification. No copy/paste redemption code is required. Old valid quotes and historical balances remain honored; package validation applies to new quotes only.
 
 ## Rates and privacy
@@ -53,3 +52,6 @@ node scripts/admin.mjs provider/verify
 node scripts/admin.mjs budget --body-file /PRIVATE/budget.json
 Budget fields: dailyLimit, buffer (exact USD strings), pause (explicit boolean).
 Provider verification lasts 24 hours. Schedule a funded renewal before expiry. Unknown probe/request outcomes retain reserved capacity until usage evidence supports reconciliation. Existing paid obligations survive pauses and restarts.
+
+## Launch inventory
+Set PURCHASE_ORDER_LIMIT=5 for five total completed or reserved purchase orders. The limit is checked atomically with every new quote. Ambiguous issued transactions keep their inventory slot and funding reservation. Finalized receipts create account credits directly. No upstream API key is sold or shared. Restock the private serving balance, import new cleared stock, then raise the limit to 10 for the next five orders. GET /api/status exposes remaining order inventory; /api/admin/compute/check includes the same stock report for the owner. $5, $10 and $20 packages are displayed as coming soon and cannot create new quotes. Historical valid quotes keep their original amounts.

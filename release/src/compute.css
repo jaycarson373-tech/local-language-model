@@ -123,3 +123,7 @@ body{background:var(--bg)}
 @media(prefers-reduced-motion:reduce){.compute-page *,.compute-page *:before,.compute-page *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.compute-panel-scan{display:none}}
 
 .compute-manifesto-signoff .official-brand-logo{width:34px;height:34px;flex:none}
+
+.credit-packages button:disabled{opacity:.38;cursor:not-allowed;background:#111311;border-color:#343834}.credit-packages{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:600px){.credit-packages{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media(max-width:920px){.compute-nav-links{display:flex}.compute-nav-links a:not(:last-child){display:none}}@media(max-width:760px){.compute-nav-links{grid-column:1/-1;grid-row:3;justify-content:flex-end;padding-top:4px}}
