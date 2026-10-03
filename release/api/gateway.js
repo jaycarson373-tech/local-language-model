@@ -1,7 +1,7 @@
 // Stateless Vercel relay only. Financial records live in the persistent backend.
 // No provider credentials, balance mutation, or ephemeral SQLite database here.
 const unavailable="Account access is not live yet. Wallet sign-in, daily claims and transactions will open with the account service.";
-const model={id:"local-language-model",name:"LocalLM",provider:"Local Language Model",inputPerMillion:null,outputPerMillion:null,context:null,maxOutput:null,capabilities:[],available:false,status:"In development"};
+const model={id:"free-lm",name:"FreeLM",provider:"FreeLM",inputPerMillion:null,outputPerMillion:null,context:null,maxOutput:null,capabilities:[],available:false,status:"In development"};
 function json(res,status,value){res.statusCode=status;res.setHeader("Content-Type","application/json; charset=utf-8");res.setHeader("Cache-Control","no-store");res.end(JSON.stringify(value));}
 // Normalize copy/paste formatting only. Never relax HTTPS, credential, path or self-loop checks.
 export function normalizeBackendUrl(value){
@@ -25,7 +25,7 @@ export function createGateway(options={}){
   if(!configured){
    if(target==="buybacks"&&method==="GET")return json(res,200,{status:"planned",network:"solana-mainnet",transactions:[],cumulativeBurnAtomic:null,decimals:null,mint:null,policy:null,observedAt:null});
    if(target==="network"&&method==="GET")return json(res,200,{status:"model_in_development",inferenceConnected:false,telemetryStatus:"not_connected",observedAt:null,source:null,metrics:{gpusOnline:null,aggregateVramBytes:null,requestsServed:null,tokensGenerated:null,utilizationBps:null,modelVersion:null},architecture:[{id:"user",label:"USER",state:"interface_ready",detail:"Workspace + developer API"},{id:"credit_layer",label:"LLM CREDIT LAYER",state:"backend_not_connected",detail:"Persistent account service pending"},{id:"request_router",label:"REQUEST ROUTER",state:"relay_ready",detail:"Same-origin API relay"},{id:"local_model",label:"LOCAL MODEL",state:"in_development",detail:"Custom endpoint not connected"},{id:"gpu_cluster",label:"GPU CLUSTER",state:"telemetry_not_connected",detail:"Awaiting hardware collector"},{id:"response",label:"RESPONSE",state:"awaiting_model",detail:"No serving model connected"}]});
-   if(target==="status"&&method==="GET")return json(res,200,{name:"Local Language Model",ticker:"LLM",mode:"preview",backendConfigured:false,model,dailyBudget:0,paused:true,purchaseConfigured:false,burnConfigured:false,customModel:{name:"Local Language Model",available:false,status:"In development"},message:unavailable});
+   if(target==="status"&&method==="GET")return json(res,200,{name:"FreeLM",ticker:"LLM",mode:"preview",backendConfigured:false,model,dailyBudget:0,paused:true,purchaseConfigured:false,burnConfigured:false,customModel:{name:"FreeLM",available:false,status:"In development"},message:unavailable});
    return json(res,503,{error:unavailable});
   }
   let base,configurationIssue="BACKEND_URL_NOT_PARSEABLE";

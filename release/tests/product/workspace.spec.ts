@@ -23,10 +23,10 @@ for(const width of [1440,390,320]) {
     await page.screenshot({path:`test-results/context-${width}.png`,fullPage:true});
     await use.click();
     await expect(page.getByRole("textbox",{name:"Message"})).toHaveValue("Keep evidence.\n\nExplain uncertainty.");
-    await expect(page.getByRole("button",{name:/LOCAL LLM/})).toBeVisible();
-    await page.getByRole("button",{name:/LOCAL LLM/}).click();
-    await expect(page.locator(".model-menu")).toContainText("LocalLM · Local Language Model");
-    await page.getByRole("button",{name:/LOCAL LLM/}).click();
+    await expect(page.getByRole("button",{name:/FREELM/})).toBeVisible();
+    await page.getByRole("button",{name:/FREELM/}).click();
+    await expect(page.locator(".model-menu")).toContainText("FreeLM · Model workspace");
+    await page.getByRole("button",{name:/FREELM/}).click();
     await page.getByRole("button",{name:"Send message"}).click();
     await expect(page.getByRole("heading",{name:"Connect your wallet"})).toBeVisible();
     await page.getByRole("button",{name:"Close",exact:true}).click();

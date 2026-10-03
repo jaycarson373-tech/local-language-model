@@ -1,30 +1,25 @@
-# LOCAL LANGUAGE MODEL — $LLM
+# FreeLM
 
-**This release/ directory is the runnable standalone application.** It contains normal React, Vite, Node.js and SQLite source files. The earlier root/app scaffolding is superseded by this folder. The authoritative CI workflow is verified.yml.
+FreeLM is the application and AI workspace. The existing $LLM token, wallet accounts, service API keys, immutable ledger, credit lots and transaction receipts are retained.
 
-Requires Node.js 24 or later. From release/:
+The canonical runnable app is `release/`: React, Vite, Node 24 and SQLite. Root/app scaffolding is historical; deployments use this release. Existing databases remain at their configured paths, including /data/llm.sqlite. A brand change does not reset or rename financial records.
 
 ```sh
 npm install
 cp .env.example .env
 npm run dev
-```
-
-Development URL: http://localhost:5173. The helpers load .env server-side; secrets are never bundled into the browser.
-
-```sh
 npm run typecheck
 npm test
 npm run build
 npm start
 ```
 
-Built local URL: http://localhost:3000; set PUBLIC_URL to that origin for a built local preview. The workspace preview is deployed on Vercel; see VERCEL.md. For production set NODE_ENV=production, PUBLIC_URL to the exact public HTTPS origin and DB_PATH to a persistent disk. Use this folder's Dockerfile and maintain one app instance per ledger.
+FreeLLMAPI free-tier serving uses the new `freellmapi-sse` adapter. Deploy the isolated router in `router/`, add usable provider keys, and connect its private unified key and HTTPS /v1 URL to FreeLM. The public freellmapi.co website is not an inference endpoint. Read [router/README.md](router/README.md) and use [/setup](https://local-language-model.vercel.app/setup) for exact configuration blocks.
 
-Routes: /, /chat, /context, /credits, /account, /developers, /pricing, /transparency and /docs. The overview retains the daily holder-credit proposition. Context Studio performs local exact-paragraph deduplication; byte reduction is not a token, cost or quality benchmark. Context only reaches a provider when the user sends it in chat. The chat workspace is the primary interface.
+The adapter verifies ready catalog entries, pins a model, checks the actual serving header, streams text, rejects estimated usage for settlement and preserves uncertain reservations. It does not replace authentication or credit accounting. The funded hosted and custom endpoint adapters remain available for existing installations.
 
-The server implements wallet signatures, scoped hashed API keys, persistent conversations, a provider adapter layer, exact credit lots, an immutable ledger, funded holder epochs, canonical USDC payment quotes, actual checked-token burn quotes, finalized receipt verification, anti-replay, atomic reservations and restart reconciliation. The token instruction module encodes only canonical legacy SPL transferChecked/burnChecked instructions and ATA derivation; its exact bytes are tested.
+Public API model ID: `free-lm`. Existing clients using `local-language-model` remain accepted. Existing API-key prefixes and session cookies remain compatible.
 
-The only offered model is our custom Local Language Model, currently In development with no connected serving endpoint. GPT-4.1 is removed from the product. The prior hosted adapter remains dormant for reference; it cannot be selected, probed, or used as fallback. Custom rates and limits will be published after endpoint verification. Initial funding and daily budget are zero, issuance is paused, and mint/recipient/conversion configuration is unset. Inference and financial operations stay unavailable until real funded configuration is verified. This is a standalone rebuild; no previous hosted ledger has been imported or changed.
+Customer service prices are independent of provider free-tier pricing. The existing $1 USDC package still adds $1 of usage; no unrequested conversion or new token ticker is introduced. Daily claims remain disabled. Purchases/burns require verified serving and sufficient cleared reserve. No free quotas count as cash funding.
 
-Read OPERATOR.md and ACCEPTANCE.md in this folder. Controlled provider and chain fixtures are not proof of paid inference or real mainnet transaction behavior. GitHub Actions records build, typecheck, automated tests, audit and mobile evidence. Production activation still requires real credentials, cleared funding, canonical configuration and verified deployment behavior.
+Run verified.yml for build, typecheck, ledger/provider tests and desktop/mobile browser evidence. The FreeLLMAPI project describes its free tiers as experimental, so an installed adapter alone is not proof of production AI or payment availability.

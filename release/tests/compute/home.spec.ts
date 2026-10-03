@@ -8,8 +8,8 @@ for(const width of [1440,390,320])test("compute account, network and workspace p
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:"test-results/compute-home-"+width+".png",fullPage:true});
  await page.locator(".compute-hero").getByRole("link",{name:"EXPLORE COMPUTE"}).click();await expect(page.getByRole("heading",{name:"YOUR COMPUTE",exact:true})).toBeInViewport();
  await page.locator(".compute-hero").getByRole("button",{name:"CONNECT WALLET",exact:true}).click();await expect(page.getByRole("heading",{name:"Connect your wallet"})).toBeVisible();await page.getByRole("button",{name:"Close",exact:true}).click();
- await page.locator(".compute-workspace-preview").getByRole("link",{name:"OPEN WORKSPACE"}).click();await expect(page.locator(".model-picker")).toContainText("LOCAL LLM");await expect(page.locator(".model-picker")).toContainText("LLM-1 // PREVIEW");await expect(page.locator(".preview-note")).toContainText("MODEL IN DEVELOPMENT");
- await page.getByRole("button",{name:/LOCAL LLM/}).click();await expect(page.locator(".model-menu")).toContainText("MODEL IN DEVELOPMENT");await expect(page.locator(".model-menu")).not.toContainText("GPT");
+ await page.locator(".compute-workspace-preview").getByRole("link",{name:"OPEN WORKSPACE"}).click();await expect(page.locator(".model-picker")).toContainText("FREELM");await expect(page.locator(".model-picker")).toContainText("FREE MODELS // PREVIEW");await expect(page.locator(".preview-note")).toContainText("MODEL IN DEVELOPMENT");
+ await page.getByRole("button",{name:/FREELM/}).click();await expect(page.locator(".model-menu")).toContainText("MODEL IN DEVELOPMENT");await expect(page.locator(".model-menu")).not.toContainText("GPT");
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });
 test("compute dashboard renders returned account values, not a holding multiplier or invented pool",async({page})=>{

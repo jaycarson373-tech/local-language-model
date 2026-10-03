@@ -1,5 +1,5 @@
 {
-  "name": "local-language-model",
+  "name": "freelm",
   "version": "0.1.0",
   "private": true,
   "type": "module",

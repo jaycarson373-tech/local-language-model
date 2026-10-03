@@ -1,15 +1,21 @@
-# Local Language Model operator guide
+# FreeLM operator guide
 
 The standalone app is in release/. It uses Node.js 24, React/Vite and a persistent SQLite database. No hosted editor is required. Run one app instance per persistent ledger, with HTTPS terminated by your host or reverse proxy. PUBLIC_URL must be the exact public HTTPS origin in production. Do not place privileged keys in VITE_ variables, source control or browser code.
 
-## Current funded serving
-FUNDED-SETUP.md describes the launch adapter, paid stock import, configurable margin, private routing, exact usage accounting and fixed $2 / $5 / $10 checkout. The durable ledger remains unchanged apart from additive price/cost metadata. No Supabase setup is required.
+## FreeLLMAPI free-tier serving
+
+The requested FreeLM router connection is documented in [router/README.md](router/README.md). Deploy it separately, keep account and router databases separate, add provider keys and the router unified key privately, and configure exact retail rates. Select `freellmapi-sse`; run `node scripts/activate-router.mjs --buffer 1` only after recording cleared funding. Quotas are not cash funding. The adapter rejects estimated usage and does not invent a provider cost.
+
+The app uses public model ID `free-lm` and accepts legacy `local-language-model` clients. Session cookies, key prefixes and the persistent ledger remain compatible. No migration or balance reset is part of this rename.
+
+## Existing funded serving
+FUNDED-SETUP.md describes the launch adapter, paid stock import, configurable margin, private routing, exact usage accounting and the current $1 checkout (larger packages are disabled). The durable ledger remains unchanged apart from additive price/cost metadata. No Supabase setup is required.
 
 ## Secure configuration
 
 For local development copy release/.env.example to release/.env, then run npm run dev inside release/. The helper loads .env server-side. For production use your host's secret manager; npm start can load a local .env when present.
 
-- Custom serving credentials and exact model catalog: see LAUNCH.md and .env.example. The authenticated HTTPS OpenAI text-chat SSE subset is implemented. No endpoint is configured by default. The archived hosted adapter remains inactive.
+- Custom serving credentials and exact model catalog: see LAUNCH.md and .env.example. The authenticated HTTPS OpenAI text-chat SSE subset is implemented. No endpoint is configured by default. Select one serving adapter explicitly; no fallback runs behind an unverified model.
 - ADMIN_KEY: at least 32 cryptographically random characters; generated and stored outside the repository.
 - SOLANA_RPC_URL: HTTPS Solana mainnet archive RPC supporting finalized blocks, token-account enumeration and transaction history. The genesis hash is verified.
 - LLM_MINT: actual canonical legacy SPL-token mint, validated against actual supply.
@@ -29,7 +35,7 @@ Canonical mainnet USDC: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v. The servic
 Every admin operation uses POST, Content-Type: application/json and Authorization: Bearer ADMIN_KEY, to YOUR_ORIGIN/api/admin.
 
 1. /fund: {"amount":"actual cleared USD amount","reference":"unique receipt reference","proof":"public HTTPS receipt URL"}. Only inference funding that has actually cleared counts. This endpoint records an operator attestation, not an independent bank/provider-balance verification. Reconcile the evidence against cleared provider funds. Do not count projected fees, market cap, unsold tokens, unconverted USDC or a token burn.
-2. /provider/verify: {}. Requires full custom endpoint/protocol/model/rate/limit configuration and cleared reserve, makes an actual streamed request and checks model identity plus complete usage. A successful probe enables the catalog for 24 hours. Probe operating capacity is reserved before execution; uncertain outcomes retain that capacity. /provider/reconcile settles confirmed usage with an HTTPS proof without activating the model. Credentials/config changes require new verification. Existing hosted credentials cannot enable the custom model.
+2. /provider/verify: {}. Requires full custom endpoint/protocol/model/rate/limit configuration and cleared reserve, makes an actual streamed request and checks model identity plus complete usage. A successful probe enables the catalog for 24 hours. Probe operating capacity is reserved before execution; uncertain outcomes retain that capacity. /provider/reconcile settles confirmed usage with an HTTPS proof without activating the model. Credentials/config changes require new verification. Credentials for one adapter cannot enable a different selected adapter.
 3. /budget: {"dailyLimit":"funded daily USD budget","buffer":"safety and operating USD buffer","pause":false}. Initial daily limit is zero and new issuance is paused. Outstanding lots, overlapping epochs, quotes and overhead all reduce capacity.
 4. /index/start: {}. Validates canonical mint supply and decimals, initializes finalized balances and starts accumulating eligibility history. It never fabricates prior holding time. Current capacity is at most 1,000 canonical token accounts/eligible wallets; larger holder sets stop rather than truncate. Confirm your mint's actual distribution and RPC throughput before production.
 5. /index/tick: {}. Processes every observed finalized token balance change in up to 64 slots per tick. Incoming token-account increases conservatively restart the receiving wallet's full qualification period; unavailable historical blocks prevent advancement. A full 24 hours must be covered by evidence. An in-process maintenance loop runs every 15 seconds. Stop issuance if your index falls behind.
@@ -57,7 +63,7 @@ SQLite transactions use BEGIN IMMEDIATE. Ledger UPDATE and DELETE are blocked by
 
 Custom model rates publish only after serving verification. Schema migration 3 adds nullable request price snapshots without changing lots or historical records. Legacy requests retain their original accounting rates; new requests reconcile using their own recorded prices. One dollar equals 1,000,000,000 integer units. Retail charges determine user credit consumption. Cleared capacity conservatively covers full retail obligations; actual provider invoice spending is not integrated and remains labeled unavailable.
 
-## Custom model (only offered model)
+## Custom model adapter
 
 server/custom-provider.ts implements the explicitly selected authenticated text-chat SSE protocol, exact decimal catalog configuration, complete normalized usage and identity verification. Configure it using LAUNCH.md; arbitrary schemas need their own adapter. Accounts, credit lots and UI remain separate. No custom inference is marked available before a funded live probe passes.
 

@@ -1,4 +1,4 @@
-# Local Language Model: launch setup
+# FreeLM: launch setup
 Website: https://local-language-model.vercel.app
 Source: https://github.com/jaycarson373-tech/local-language-model
 
@@ -105,7 +105,7 @@ X bio:
 HOLD $LLM. USE AI. Building daily compute credits for holders. Chat. Code. Build. One balance for workspace + API. Solana.
 
 Pump description:
-Local Language Model — $LLM. Built to turn eligible holdings into daily compute credits for chat, code and developer tools. One balance for workspace + API. Buy additional credits or burn $LLM for funded usage when redemption opens. Explore the network preview.
+FreeLM — $LLM. Built to turn eligible holdings into daily compute credits for chat, code and developer tools. One balance for workspace + API. Buy additional credits or burn $LLM for funded usage when redemption opens. Explore the network preview.
 
 Launch thesis:
 AI is becoming a daily bill. $LLM is built to turn token utility into something you can use: compute. Eligible holders share a funded daily credit pool. Chat, code and build through one metered balance. Expand usage through purchases or verified burns. Grow the network around real demand and measured capacity.

@@ -1,7 +1,7 @@
 import {createHash} from "node:crypto";
 import {check,integer,units} from "./money";
 import type {Message,Usage} from "./provider";
-export type CustomModel={endpoint:string,key:string,upstreamModel:string,provider:string,inputPrice:number,outputPrice:number,context:number,maxOutput:number,fingerprint:string,transport?:"hosted-credit-sse",providerTag?:string,allowedModelIds?:string[],providerInputPrice?:number,providerOutputPrice?:number,markupBps?:number,pricingObservedAt?:number};
+export type CustomModel={endpoint:string,key:string,upstreamModel:string,provider:string,inputPrice:number,outputPrice:number,context:number,maxOutput:number,fingerprint:string,transport?:"hosted-credit-sse"|"freellmapi-sse",displayName?:string,providerTag?:string,allowedModelIds?:string[],providerInputPrice?:number,providerOutputPrice?:number,markupBps?:number,pricingObservedAt?:number};
 export function configuredModel():CustomModel|null{try{
  const endpoint=process.env.LLM_MODEL_CHAT_URL,key=process.env.LLM_MODEL_API_KEY,upstreamModel=process.env.LLM_MODEL_ID,provider=process.env.LLM_MODEL_PROVIDER;
  if(process.env.LLM_MODEL_PROTOCOL!=="openai-chat-sse"||!endpoint||!key||!upstreamModel||!provider)return null;
@@ -22,7 +22,7 @@ export async function executeCustom(model:CustomModel,messages:Message[],maxOutp
  if(data.model!==undefined){check(data.model===model.upstreamModel,"Model identity did not match the configured catalog",502);modelSeen=true;}
  if(data.id!==undefined){check(typeof data.id==="string"&&data.id.length>0&&data.id.length<=200&&!/[\x00-\x1f]/.test(data.id),"Invalid model request identifier",502);check(!providerId||providerId===data.id,"Model request identifier changed",502);providerId=data.id;}
  const token=data.choices?.[0]?.delta?.content;if(token!==undefined&&token!==null){check(typeof token==="string","Unsupported model content schema",502);total+=new TextEncoder().encode(token).length;check(total<=262144,"Model output exceeds limits",502);onToken(token);}
- if(data.usage){const input=integer(data.usage.prompt_tokens),output=integer(data.usage.completion_tokens);check(output<=maxOutput&&input+output<=model.context,"Model usage exceeds published limits",502);if(data.usage.total_tokens!==undefined)check(data.usage.total_tokens===input+output,"Inconsistent model usage",502);if(usage)check(usage.input===input&&usage.output===output,"Model usage changed",502);usage={input,output,providerId};}
+ if(data.usage){check(data.usage.estimated!==true,"Estimated usage cannot settle a metered request; reconciliation required",502);const input=integer(data.usage.prompt_tokens),output=integer(data.usage.completion_tokens);check(output<=maxOutput&&input+output<=model.context,"Model usage exceeds published limits",502);if(data.usage.total_tokens!==undefined)check(data.usage.total_tokens===input+output,"Inconsistent model usage",502);if(usage)check(usage.input===input&&usage.output===output,"Model usage changed",502);usage={input,output,providerId};}
  }}
  check(buffer.trim()===""&&done&&usage&&modelSeen&&providerId,"Model stream ended without verified identity and complete usage; reservation retained",502);
  return {...usage,providerId};

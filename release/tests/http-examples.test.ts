@@ -17,7 +17,7 @@ test("HTTP wallet authentication and API revocation work; custom-only inference 
  let logs="";child.stdout.on("data",d=>logs+=d);child.stderr.on("data",d=>logs+=d);
  try{
   await new Promise<void>((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error(logs)),15000);child.stdout.on("data",()=>{if(logs.includes("server ready")){clearTimeout(timer);resolve();}});child.once("exit",()=>{clearTimeout(timer);reject(new Error(logs));});});
-  const status=await(await fetch(base+"/api/status")).json();assert.equal(status.model.id,"local-language-model");assert.equal(status.customModel.available,false);assert.equal(status.model.status,"In development");assert.equal(status.model.inputPerMillion,null);assert.equal(JSON.stringify(status).includes("gpt-4.1"),false);
+  const status=await(await fetch(base+"/api/status")).json();assert.equal(status.model.id,"free-lm");assert.equal(status.customModel.available,false);assert.equal(status.model.status,"In development");assert.equal(status.model.inputPerMillion,null);assert.equal(JSON.stringify(status).includes("gpt-4.1"),false);
   const headers={"Content-Type":"application/json",Origin:base};
   const nResponse=await fetch(base+"/api/auth/nonce",{method:"POST",headers,body:JSON.stringify({wallet:wallet.publicKey.toBase58()})});assert.equal(nResponse.status,200);const n=await nResponse.json();
   const signature=bs58.encode(ed25519.sign(new TextEncoder().encode(n.message),wallet.secretKey.slice(0,32)));
@@ -25,10 +25,10 @@ test("HTTP wallet authentication and API revocation work; custom-only inference 
   const replay=await fetch(base+"/api/auth/verify",{method:"POST",headers,body:JSON.stringify({id:n.id,signature})});assert.equal(replay.status,401);
   const keyResponse=await fetch(base+"/api/keys",{method:"POST",headers:{...headers,Cookie:cookie},body:JSON.stringify({name:"API examples",cap:"0.1"})});assert.equal(keyResponse.status,200);const key=await keyResponse.json();
   const OUR_API_BASE_URL=base+"/api/v1",OUR_USER_API_KEY=key.secret;
-  const body=JSON.stringify({model:"local-language-model",stream:true,max_tokens:1024,messages:[{role:"user",content:"Hello"}]});
-  const curl=execFileSync("curl",["-sS","-N","-w","\n%{http_code}",OUR_API_BASE_URL+"/chat/completions","-H","Authorization: Bearer "+OUR_USER_API_KEY,"-H","Content-Type: application/json","-d",body],{encoding:"utf8"});assert.match(curl,/in development/);assert.ok(curl.endsWith("\n503"));
-  const response=await fetch(OUR_API_BASE_URL+"/chat/completions",{method:"POST",headers:{Authorization:"Bearer "+OUR_USER_API_KEY,"Content-Type":"application/json"},body});assert.equal(response.status,503);assert.match((await response.json()).error,/custom endpoint/);
-  const old=await fetch(OUR_API_BASE_URL+"/chat/completions",{method:"POST",headers:{Authorization:"Bearer "+OUR_USER_API_KEY,"Content-Type":"application/json"},body:body.replace("local-language-model","gpt-4.1-mini")});assert.equal(old.status,503);
+  const body=JSON.stringify({model:"free-lm",stream:true,max_tokens:1024,messages:[{role:"user",content:"Hello"}]});
+  const curl=execFileSync("curl",["-sS","-N","-w","\n%{http_code}",OUR_API_BASE_URL+"/chat/completions","-H","Authorization: Bearer "+OUR_USER_API_KEY,"-H","Content-Type: application/json","-d",body],{encoding:"utf8"});assert.match(curl,/verified serving route/);assert.ok(curl.endsWith("\n503"));
+  const response=await fetch(OUR_API_BASE_URL+"/chat/completions",{method:"POST",headers:{Authorization:"Bearer "+OUR_USER_API_KEY,"Content-Type":"application/json"},body});assert.equal(response.status,503);assert.match((await response.json()).error,/verified serving route/);
+  const old=await fetch(OUR_API_BASE_URL+"/chat/completions",{method:"POST",headers:{Authorization:"Bearer "+OUR_USER_API_KEY,"Content-Type":"application/json"},body:body.replace("free-lm","gpt-4.1-mini")});assert.equal(old.status,503);
   const probe=await fetch(base+"/api/admin/provider/verify",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+admin},body:"{}"});assert.equal(probe.status,503);
   const me=await(await fetch(base+"/api/me",{headers:{Cookie:cookie}})).json();assert.equal(me.balance,1000000000);assert.equal(me.requests.length,0);assert.equal(JSON.stringify(me).includes(OUR_USER_API_KEY),false);
   const transparency=await(await fetch(base+"/api/transparency")).json();assert.equal(transparency.capacity.overhead,0);

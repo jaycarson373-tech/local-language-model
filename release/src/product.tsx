@@ -8,13 +8,13 @@ export function ContextMark() {
 
 export function Home({available}: {available: boolean}) {
   return <div className="product-home">
-    <div className="home-kicker"><span className="status-dot"/>LOCAL LANGUAGE MODEL <span className="token-pill">$LLM</span></div>
+    <div className="home-kicker"><span className="status-dot"/>FREELM <span className="token-pill">$LLM</span></div>
     <div className="hero-grid"><div className="hero-copy"><h1>Your AI should<br/><span>be local.</span></h1><p>Your context. Your workspace. Your daily AI allowance. Hold $LLM, claim funded credits and put them to work.</p><div className="hero-actions"><a className="primary" href="/chat">Open workspace <span>↗</span></a><a className="secondary" href="/credits">View daily credits <span>→</span></a></div><div className="hero-caption">HOLD <span>/</span> CLAIM <span>/</span> CREATE</div></div><div className="context-visual"><div className="visual-top"><span>THE CONTEXT LAYER</span><span>01 / LLM</span></div><ContextMark/><div className="visual-bottom"><span>YOUR KNOWLEDGE</span><b>↓</b><span>A FOCUSED CONTEXT PACK</span></div><div className="visual-note">Prepared locally. Shared only when you send.</div></div></div>
     <div className="product-status"><span><i className={available?"status-dot":"status-dot muted-dot"}/>{available?"Workspace connected":"Private preview"}</span><span>Chat + API <b>·</b> one usage balance</span><a href="/credits">Explore holder access ↗</a></div>
     <div className="section-label"><span>BUILT AROUND YOUR WORK</span><span>01 — 03</span></div>
     <div className="product-grid"><a href="/chat"><span className="feature-number">01 / WORKSPACE</span><h2>Think it through.</h2><p>Research an idea, work through code or shape a draft in one conversation.</p><span className="feature-link">Open chat ↗</span></a><a href="/context"><span className="feature-number">02 / CONTEXT STUDIO</span><h2>Bring what matters.</h2><p>Prepare a text pack in your browser. Review repeated passages and inspect the actual size change.</p><span className="feature-link">Prepare context ↗</span></a><a href="/developers"><span className="feature-number">03 / DEVELOPER API</span><h2>Work in your tools.</h2><p>Connect supported text-chat clients with your own service key and the same usage balance.</p><span className="feature-link">Explore the API ↗</span></a></div>
     <ProductStory/>
-    <footer className="product-footer"><span>LOCAL LANGUAGE MODEL</span><span>Context first. Clear accounting.</span><a href="/transparency">View funding & receipts ↗</a></footer>
+    <footer className="product-footer"><span>FREELM</span><span>Context first. Clear accounting.</span><a href="/transparency">View funding & receipts ↗</a></footer>
   </div>;
 }
 
